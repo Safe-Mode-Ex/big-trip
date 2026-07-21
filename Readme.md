@@ -1,7 +1,7 @@
-# Проект «{{projectTitle}}»
+# Проект «Big Trip»
 
-* Студент: [{{userName}}]({{userProfile}}).
-* Наставник: `Неизвестно`.
+- Студент: [Сергей Дмитриев](https://htmlacademy.ru/profile/safe_mode).
+- Наставник: `-`.
 
 ---
 
