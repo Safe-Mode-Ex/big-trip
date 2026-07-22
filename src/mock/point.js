@@ -8,7 +8,7 @@ const mockPoints = [{
   dateTo: '2019-07-11T11:22:13.375Z',
   destination: '1',
   isFavorite: false,
-  offers: ['1'],
+  offers: ['1', '2'],
 }, {
   type: getRandomArrayElement(TYPES),
   basePrice: 10000,
@@ -16,7 +16,7 @@ const mockPoints = [{
   dateTo: '2019-07-11T13:00:13.375Z',
   destination: '1',
   isFavorite: false,
-  offers: ['1'],
+  offers: ['3', '4'],
 }, {
   type: getRandomArrayElement(TYPES),
   basePrice: 1000,
@@ -24,7 +24,7 @@ const mockPoints = [{
   dateTo: '2019-07-11T14:00:13.375Z',
   destination: '1',
   isFavorite: false,
-  offers: ['1'],
+  offers: ['1', '2'],
 }, {
   type: getRandomArrayElement(TYPES),
   basePrice: 100,
@@ -32,7 +32,7 @@ const mockPoints = [{
   dateTo: '2019-07-11T17:00:13.375Z',
   destination: '1',
   isFavorite: false,
-  offers: ['1'],
+  offers: ['3', '4'],
 }];
 
 function getRandomPoint() {

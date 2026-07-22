@@ -138,7 +138,7 @@ function createEditPointDetailsTemplate({type, offers, destination}) {
                   <span class="event__offer-price">${price}</span>
                 </label>
               </div>
-            `))}
+            `)).join('')}
 
             ${allOffers.map(({id, title, price}) => (`
               <div class="event__offer-selector">
@@ -154,7 +154,7 @@ function createEditPointDetailsTemplate({type, offers, destination}) {
                   <span class="event__offer-price">${price}</span>
                 </label>
               </div>
-            `))}
+            `)).join('')}
           </div>
         </section>
       `) : ''}
@@ -167,7 +167,7 @@ function createEditPointDetailsTemplate({type, offers, destination}) {
           <div class="event__photos-tape">
             ${destination.pictures.map(({src, description}) => (`
               <img class="event__photo" src="${src}" alt="${description}">
-            `))}
+            `)).join('')}
           </div>
         </div>
       </section>

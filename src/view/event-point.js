@@ -4,17 +4,16 @@ import {createElement} from '../render';
 function createSelectedOffersTemplate(offers) {
   return `
     <h4 class="visually-hidden">Offers:</h4>
-    ${offers.map(({title, price}) => (
-    `
-      <ul class="event__selected-offers">
+
+    <ul class="event__selected-offers">
+      ${offers.map(({title, price}) => (`
         <li class="event__offer">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${price}</span>
         </li>
-      </ul>
-    `
-  ))}
+      `)).join('')}
+    </ul>
   `;
 }
 
