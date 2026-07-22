@@ -1,5 +1,5 @@
-import { TYPES } from 'const';
-import { getRandomArrayElement } from 'utils';
+import { TYPES } from '../const';
+import { getRandomArrayElement } from '../utils';
 
 const mockOffers = [{
   type: getRandomArrayElement(TYPES),
