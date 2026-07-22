@@ -17,7 +17,7 @@ export default class EventsPresenter {
 
     render(new ListSortView(), this.eventsContainer);
     render(this.listComponent, this.eventsContainer);
-    render(new EditPointView(), this.listComponent.getElement());
+    render(new EditPointView(this.eventsPoints[0]), this.listComponent.getElement());
 
     for (const point of this.eventsPoints) {
       render(new EventPointView({point}), this.listComponent.getElement());

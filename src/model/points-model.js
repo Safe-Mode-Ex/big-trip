@@ -1,9 +1,11 @@
 import { getRandomPoint } from '../mock/point';
 import { mockOffers } from '../mock/offer';
+import { mockDestinations } from '../mock/destination';
 
 const POINTS_COUNT = 3;
 
 export default class PointsModel {
+  destinations = mockDestinations;
   offers = mockOffers;
   points = Array.from({length: POINTS_COUNT}, getRandomPoint);
 
@@ -14,6 +16,7 @@ export default class PointsModel {
 
       return {
         ...point,
+        destination: this.destinations.find(({id}) => id === point.destination),
         offers: hasOffers ?
           pointOffers.offers.filter(({id}) => point.offers.some((offerId) => offerId === id)) :
           [],

@@ -1,5 +1,3 @@
-import { getRandomArrayElement } from 'utils';
-
 const mockDestinations = [{
   id: '1',
   description: 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.',
@@ -22,8 +20,4 @@ const mockDestinations = [{
   ]
 }];
 
-function getRandomDestination() {
-  return getRandomArrayElement(mockDestinations);
-}
-
-export {getRandomDestination};
+export {mockDestinations};
