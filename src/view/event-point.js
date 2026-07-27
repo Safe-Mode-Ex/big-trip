@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import { getDateTime, getDurationString, humanizePointDateFrom, humanizePointTime } from '../utils';
+import { getDateTime, getDurationString, humanizePointDateFrom, humanizePointTime } from '../utils/point';
 
 function createSelectedOffersTemplate(offers) {
   return `
