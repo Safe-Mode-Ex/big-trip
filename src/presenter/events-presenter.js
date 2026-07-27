@@ -47,7 +47,13 @@ export default class EventsPresenter {
     });
 
     const editPointHeaderComponent = new EditPointHeaderView({point});
-    const editPointComponent = new EditPointView({point});
+    const editPointComponent = new EditPointView({
+      point,
+      onFormSubmit: () => {
+        replaceFormToCard();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+    });
 
     render(activeEditButtonComponent, editPointHeaderComponent.element);
     render(editPointHeaderComponent, editPointComponent.element, RenderPosition.AFTERBEGIN);
