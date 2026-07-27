@@ -1,5 +1,6 @@
 import { render, RenderPosition, replace } from '../framework/render';
 import { KEY_ESCAPE } from '../const';
+import { generateSort } from '../mock/sort';
 import EditPointViewButton from '../view/edit-point-view-button';
 import EditPointView from '../view/edit-point-view';
 import EventPointView from '../view/event-point';
@@ -21,14 +22,7 @@ export default class EventsPresenter {
 
   init() {
     this.#eventsPoints = [...this.#pointsModel.points];
-    render(new ListSortView(), this.#eventsContainer);
-
-    if (!this.#eventsPoints.length) {
-      render(new ListEmptyView(), this.#eventsContainer);
-      return;
-    }
-
-    this.#renderPointsList();
+    this.#renderEvents();
   }
 
   #renderPoint(point) {
@@ -84,8 +78,15 @@ export default class EventsPresenter {
     }
   }
 
-  #renderPointsList() {
+  #renderEvents() {
+    const sort = generateSort();
+    render(new ListSortView({sort}), this.#eventsContainer);
     render(this.#listComponent, this.#eventsContainer);
+
+    if (!this.#eventsPoints.length) {
+      render(new ListEmptyView(), this.#eventsContainer);
+      return;
+    }
 
     for (const point of this.#eventsPoints) {
       this.#renderPoint(point);
