@@ -18,7 +18,7 @@ export default class PointsModel {
         ...point,
         destination: this.#destinations.find(({id}) => id === point.destination),
         offers: hasOffers ?
-          pointOffers.offers.filter(({id}) => point.#offers.some((offerId) => offerId === id)) :
+          pointOffers.offers.filter(({id}) => point.offers.some((offerId) => offerId === id)) :
           [],
       };
     });
