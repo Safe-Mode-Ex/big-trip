@@ -53,6 +53,10 @@ export default class EventsPresenter {
         replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
       },
+      onFormReset: () => {
+        replaceFormToCard();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
     });
 
     render(activeEditButtonComponent, editPointHeaderComponent.element);
