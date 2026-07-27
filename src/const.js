@@ -6,5 +6,6 @@ const HOUR_IN_DAY = 24;
 const MS_IN_HOUR = MS_IN_SEC * SEC_IN_MIN * MIN_IN_HOUR;
 const MS_IN_DAY = MS_IN_HOUR * HOUR_IN_DAY;
 const DEC_RADIX = 10;
+const KEY_ESCAPE = 'Escape';
 
-export {TYPES, MS_IN_HOUR, MS_IN_DAY, DEC_RADIX};
+export {TYPES, MS_IN_HOUR, MS_IN_DAY, DEC_RADIX, KEY_ESCAPE};

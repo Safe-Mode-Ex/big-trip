@@ -1,5 +1,5 @@
+import AbstractView from '../framework/view/abstract-view';
 import { getDateTime, getDurationString, humanizePointDateFrom, humanizePointTime } from '../utils';
-import {createElement} from '../render';
 
 function createSelectedOffersTemplate(offers) {
   return `
@@ -18,7 +18,7 @@ function createSelectedOffersTemplate(offers) {
 }
 
 function createEventPointTemplate(point) {
-  const {type, dateFrom, dateTo, basePrice, offers} = point;
+  const {type, dateFrom, dateTo, basePrice, offers, destination} = point;
 
   const date = humanizePointDateFrom(dateFrom);
   const dateTime = getDateTime(dateFrom);
@@ -41,7 +41,7 @@ function createEventPointTemplate(point) {
           alt="Event type icon"
         >
       </div>
-      <h3 class="event__title">${type} Amsterdam</h3>
+      <h3 class="event__title">${type} ${destination.name}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${dateTimeFrom}">${timeFrom}</time>
@@ -54,7 +54,7 @@ function createEventPointTemplate(point) {
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
       </p>
 
-      ${createSelectedOffersTemplate(offers)}
+      ${offers.length ? createSelectedOffersTemplate(offers) : ''}
 
       <button class="event__favorite-btn event__favorite-btn--active" type="button">
         <span class="visually-hidden">Add to favorite</span>
@@ -62,31 +62,20 @@ function createEventPointTemplate(point) {
           <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
         </svg>
       </button>
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>
     </div>
   `;
 }
 
-export default class EventPointView {
+export default class EventPointView extends AbstractView {
+  #point = null;
+
   constructor({point}) {
-    this.point = point;
+    super();
+
+    this.#point = point;
   }
 
-  getTemplate() {
-    return createEventPointTemplate(this.point);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEventPointTemplate(this.#point);
   }
 }

@@ -1,4 +1,4 @@
-import { render } from './render';
+import { render } from './framework/render';
 import ListFilterView from './view/list-filter-view';
 import EventsPresenter from './presenter/events-presenter';
 import PointsModel from './model/points-model';
