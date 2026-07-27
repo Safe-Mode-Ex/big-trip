@@ -5,22 +5,25 @@ import ListSortView from './../view/list-sort-view';
 import ListView from './../view/list-view';
 
 export default class EventsPresenter {
-  listComponent = new ListView();
+  #listComponent = new ListView();
+  #eventsContainer = null;
+  #pointsModel = null;
+  #eventsPoints = null;
 
   constructor({eventsContainer, pointsModel}) {
-    this.eventsContainer = eventsContainer;
-    this.pointsModel = pointsModel;
+    this.#eventsContainer = eventsContainer;
+    this.#pointsModel = pointsModel;
   }
 
   init() {
-    this.eventsPoints = [...this.pointsModel.getPoints()];
+    this.#eventsPoints = [...this.#pointsModel.points];
 
-    render(new ListSortView(), this.eventsContainer);
-    render(this.listComponent, this.eventsContainer);
-    render(new EditPointView({point: this.eventsPoints[0]}), this.listComponent.element);
+    render(new ListSortView(), this.#eventsContainer);
+    render(this.#listComponent, this.#eventsContainer);
+    render(new EditPointView({point: this.#eventsPoints[0]}), this.#listComponent.element);
 
-    for (const point of this.eventsPoints) {
-      render(new EventPointView({point}), this.listComponent.element);
+    for (const point of this.#eventsPoints) {
+      render(new EventPointView({point}), this.#listComponent.element);
     }
   }
 }
