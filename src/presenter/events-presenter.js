@@ -1,4 +1,5 @@
 import { render, RenderPosition, replace } from '../framework/render';
+import { KEY_ESCAPE } from '../const';
 import EditPointViewButton from '../view/edit-point-view-button';
 import EditPointView from '../view/edit-point-view';
 import EventPointView from '../view/event-point';
@@ -80,7 +81,7 @@ export default class EventsPresenter {
   }
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape') {
+    if (evt.key === KEY_ESCAPE) {
       evt.preventDefault();
       this.#closeEditForm();
     }
