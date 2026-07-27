@@ -1,4 +1,4 @@
-import { remove, render, RenderPosition } from '../framework/render';
+import { render, RenderPosition, replace } from '../framework/render';
 import EditPointViewButton from '../view/edit-point-view-button';
 import EditPointView from '../view/edit-point-view';
 import EventPointView from '../view/event-point';
@@ -11,7 +11,6 @@ export default class EventsPresenter {
   #eventsContainer = null;
   #pointsModel = null;
   #eventsPoints = null;
-  #isEdit = null;
 
   constructor({eventsContainer, pointsModel}) {
     this.#eventsContainer = eventsContainer;
@@ -20,34 +19,50 @@ export default class EventsPresenter {
 
   init() {
     this.#eventsPoints = [...this.#pointsModel.points];
-    this.#isEdit = this.#eventsPoints.reduce((result, point) => {
-      result[point.id] = false;
-      return result;
-    }, {});
-
     render(new ListSortView(), this.#eventsContainer);
     this.#renderPointsList();
   }
 
   #renderPoint(point) {
-    const isEdit = this.#isEdit[point.id];
-    const editButtonComponent = new EditPointViewButton({
-      onClick: () => this.#handleEditButtonClick(point.id),
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceFormToCard();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+    const passiveEditButtonComponent = new EditPointViewButton({
+      onClick: () => {
+        replaceCardToForm();
+        document.addEventListener('keydown', escKeyDownHandler);
+      },
     });
 
-    if (isEdit) {
-      const editPointHeaderComponent = new EditPointHeaderView({point});
-      const editPointComponent = new EditPointView({point});
+    const activeEditButtonComponent = new EditPointViewButton({
+      onClick: () => {
+        replaceFormToCard();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+    });
 
-      render(editButtonComponent, editPointHeaderComponent.element);
-      render(editPointHeaderComponent, editPointComponent.element, RenderPosition.AFTERBEGIN);
-      render(editPointComponent, this.#listComponent.element);
+    const editPointHeaderComponent = new EditPointHeaderView({point});
+    const editPointComponent = new EditPointView({point});
 
-      return;
-    }
+    render(activeEditButtonComponent, editPointHeaderComponent.element);
+    render(editPointHeaderComponent, editPointComponent.element, RenderPosition.AFTERBEGIN);
 
     const pointComponent = new EventPointView({point});
-    render(editButtonComponent, pointComponent.element);
+    render(passiveEditButtonComponent, pointComponent.element);
+
+    function replaceCardToForm() {
+      replace(editPointComponent, pointComponent);
+    }
+
+    function replaceFormToCard() {
+      replace(pointComponent, editPointComponent);
+    }
+
     render(pointComponent, this.#listComponent.element);
   }
 
@@ -58,10 +73,4 @@ export default class EventsPresenter {
       this.#renderPoint(point);
     }
   }
-
-  #handleEditButtonClick = (pointId) => {
-    this.#isEdit[pointId] = !this.#isEdit[pointId];
-    remove(this.#listComponent);
-    this.#renderPointsList();
-  };
 }
