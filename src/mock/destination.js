@@ -4,7 +4,7 @@ const mockDestinations = [{
   name: 'Chamonix',
   pictures: [
     {
-      src: 'http://picsum.photos/300/200?r=0.0762563005163317',
+      src: 'https://loremflickr.com/248/152?random=3',
       description: 'Chamonix parliament building'
     },
     {

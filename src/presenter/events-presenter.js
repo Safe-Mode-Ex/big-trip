@@ -1,4 +1,4 @@
-import { render } from './../render';
+import { render } from '../framework/render';
 import EditPointView from './../view/edit-point-view';
 import EventPointView from './../view/event-point';
 import ListSortView from './../view/list-sort-view';
@@ -17,10 +17,10 @@ export default class EventsPresenter {
 
     render(new ListSortView(), this.eventsContainer);
     render(this.listComponent, this.eventsContainer);
-    render(new EditPointView(this.eventsPoints[0]), this.listComponent.getElement());
+    render(new EditPointView({point: this.eventsPoints[0]}), this.listComponent.element);
 
     for (const point of this.eventsPoints) {
-      render(new EventPointView({point}), this.listComponent.getElement());
+      render(new EventPointView({point}), this.listComponent.element);
     }
   }
 }

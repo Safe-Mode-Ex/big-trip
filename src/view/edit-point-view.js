@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {createElement} from './../render';
+import AbstractView from '../framework/view/abstract-view';
 import { mockDestinations } from '../mock/destination';
 import { mockOffers } from '../mock/offer';
 import { TYPES } from '../const';
@@ -186,24 +186,15 @@ function createEditPointTemplate(point) {
   `;
 }
 
-export default class EditPointView {
-  constructor(point) {
-    this.point = point;
+export default class EditPointView extends AbstractView {
+  #point = null;
+
+  constructor({point}) {
+    super();
+    this.#point = point;
   }
 
-  getTemplate() {
-    return createEditPointTemplate(this.point);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEditPointTemplate(this.#point);
   }
 }

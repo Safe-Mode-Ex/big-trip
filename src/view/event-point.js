@@ -1,5 +1,5 @@
+import AbstractView from '../framework/view/abstract-view';
 import { getDateTime, getDurationString, humanizePointDateFrom, humanizePointTime } from '../utils';
-import {createElement} from '../render';
 
 function createSelectedOffersTemplate(offers) {
   return `
@@ -54,7 +54,7 @@ function createEventPointTemplate(point) {
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
       </p>
 
-      ${createSelectedOffersTemplate(offers)}
+      ${offers.length ? createSelectedOffersTemplate(offers) : ''}
 
       <button class="event__favorite-btn event__favorite-btn--active" type="button">
         <span class="visually-hidden">Add to favorite</span>
@@ -69,24 +69,15 @@ function createEventPointTemplate(point) {
   `;
 }
 
-export default class EventPointView {
+export default class EventPointView extends AbstractView {
+  #point = null;
+
   constructor({point}) {
-    this.point = point;
+    super();
+    this.#point = point;
   }
 
-  getTemplate() {
-    return createEventPointTemplate(this.point);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEventPointTemplate(this.#point);
   }
 }
