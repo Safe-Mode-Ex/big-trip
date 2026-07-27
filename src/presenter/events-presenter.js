@@ -6,6 +6,7 @@ import EventPointView from '../view/event-point';
 import ListSortView from '../view/list-sort-view';
 import ListView from '../view/list-view';
 import EditPointHeaderView from '../view/edit-point-header-view';
+import ListEmptyView from '../view/list-empty-view';
 
 export default class EventsPresenter {
   #listComponent = new ListView();
@@ -21,6 +22,12 @@ export default class EventsPresenter {
   init() {
     this.#eventsPoints = [...this.#pointsModel.points];
     render(new ListSortView(), this.#eventsContainer);
+
+    if (!this.#eventsPoints.length) {
+      render(new ListEmptyView(), this.#eventsContainer);
+      return;
+    }
+
     this.#renderPointsList();
   }
 
