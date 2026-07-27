@@ -8,6 +8,8 @@ import EditPointHeaderView from '../view/edit-point-header-view';
 
 export default class EventsPresenter {
   #listComponent = new ListView();
+  #pointComponent = null;
+  #editPointComponent = null;
   #eventsContainer = null;
   #pointsModel = null;
   #eventsPoints = null;
@@ -19,68 +21,68 @@ export default class EventsPresenter {
 
   init() {
     this.#eventsPoints = [...this.#pointsModel.points];
-    render(new ListSortView(), this.#eventsContainer);
-    this.#renderPointsList();
+    this.#renderEvents();
   }
 
   #renderPoint(point) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
     const passiveEditButtonComponent = new EditPointViewButton({
       onClick: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
+        this.#replaceCardToForm();
+        document.addEventListener('keydown', this.#escKeyDownHandler);
       },
     });
 
     const activeEditButtonComponent = new EditPointViewButton({
       onClick: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
+        this.#closeEditForm();
       },
     });
 
     const editPointHeaderComponent = new EditPointHeaderView({point});
-    const editPointComponent = new EditPointView({
+
+    this.#pointComponent = new EventPointView({point});
+    this.#editPointComponent = new EditPointView({
       point,
       onFormSubmit: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
+        this.#closeEditForm();
       },
       onFormReset: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
+        this.#closeEditForm();
       },
     });
 
+    render(passiveEditButtonComponent, this.#pointComponent.element);
     render(activeEditButtonComponent, editPointHeaderComponent.element);
-    render(editPointHeaderComponent, editPointComponent.element, RenderPosition.AFTERBEGIN);
-
-    const pointComponent = new EventPointView({point});
-    render(passiveEditButtonComponent, pointComponent.element);
-
-    function replaceCardToForm() {
-      replace(editPointComponent, pointComponent);
-    }
-
-    function replaceFormToCard() {
-      replace(pointComponent, editPointComponent);
-    }
-
-    render(pointComponent, this.#listComponent.element);
+    render(editPointHeaderComponent, this.#editPointComponent.element, RenderPosition.AFTERBEGIN);
+    render(this.#pointComponent, this.#listComponent.element);
   }
 
-  #renderPointsList() {
+  #renderEvents() {
+    render(new ListSortView(), this.#eventsContainer);
     render(this.#listComponent, this.#eventsContainer);
 
     for (const point of this.#eventsPoints) {
       this.#renderPoint(point);
     }
   }
+
+  #replaceCardToForm() {
+    replace(this.#editPointComponent, this.#pointComponent);
+  }
+
+  #replaceFormToCard() {
+    replace(this.#pointComponent, this.#editPointComponent);
+  }
+
+  #closeEditForm() {
+    this.#replaceFormToCard();
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  }
+
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.#closeEditForm();
+    }
+  };
 }
