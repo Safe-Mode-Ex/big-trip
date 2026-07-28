@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { DEC_RADIX } from './const';
+import { DEC_RADIX } from '../const';
 
 dayjs.extend(duration);
 
@@ -9,10 +9,6 @@ const TIME_FORMAT = 'HH:mm';
 const DATE_TIME_FORMAT = 'YYYY-MM-DD';
 const DATE_TIME_WITH_TIME_FORMAT = 'YYYY-MM-DDTHH:mm';
 const DURATION_FORMAT = 'DD[D] HH[H] mm[M]';
-
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
 
 function humanizePointDateFrom(dateFrom) {
   return dateFrom ? dayjs(dateFrom).format(DATE_FORMAT) : '';
@@ -39,7 +35,6 @@ function getDurationString(dateFrom, dateTo) {
 }
 
 export {
-  getRandomArrayElement,
   humanizePointDateFrom,
   humanizePointTime,
   getDateTime,

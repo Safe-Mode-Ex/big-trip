@@ -2,6 +2,7 @@ import { render } from './framework/render';
 import ListFilterView from './view/list-filter-view';
 import EventsPresenter from './presenter/events-presenter';
 import PointsModel from './model/points-model';
+import { generateFilter } from './mock/filter';
 
 const headerElement = document.querySelector('.page-header');
 const mainElement = document.querySelector('.page-main');
@@ -15,6 +16,7 @@ const eventsPresenter = new EventsPresenter({
   pointsModel,
 });
 
-render(new ListFilterView(), filtersElement);
+const filters = generateFilter(pointsModel.points);
+render(new ListFilterView({filters}), filtersElement);
 
 eventsPresenter.init();

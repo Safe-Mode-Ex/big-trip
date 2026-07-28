@@ -1,16 +1,16 @@
 import { render, RenderPosition, replace } from '../framework/render';
 import { KEY_ESCAPE } from '../const';
+import { generateSort } from '../mock/sort';
 import EditPointViewButton from '../view/edit-point-view-button';
 import EditPointView from '../view/edit-point-view';
 import EventPointView from '../view/event-point';
 import ListSortView from '../view/list-sort-view';
 import ListView from '../view/list-view';
 import EditPointHeaderView from '../view/edit-point-header-view';
+import ListEmptyView from '../view/list-empty-view';
 
 export default class EventsPresenter {
   #listComponent = new ListView();
-  #pointComponent = null;
-  #editPointComponent = null;
   #eventsContainer = null;
   #pointsModel = null;
   #eventsPoints = null;
@@ -26,64 +26,70 @@ export default class EventsPresenter {
   }
 
   #renderPoint(point) {
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === KEY_ESCAPE) {
+        evt.preventDefault();
+        closeEditForm();
+      }
+    };
+
     const passiveEditButtonComponent = new EditPointViewButton({
       onClick: () => {
-        this.#replaceCardToForm();
-        document.addEventListener('keydown', this.#escKeyDownHandler);
+        replaceCardToForm();
+        document.addEventListener('keydown', escKeyDownHandler);
       },
     });
 
     const activeEditButtonComponent = new EditPointViewButton({
       onClick: () => {
-        this.#closeEditForm();
+        closeEditForm();
       },
     });
 
     const editPointHeaderComponent = new EditPointHeaderView({point});
-
-    this.#pointComponent = new EventPointView({point});
-    this.#editPointComponent = new EditPointView({
+    const editPointComponent = new EditPointView({
       point,
       onFormSubmit: () => {
-        this.#closeEditForm();
+        closeEditForm();
       },
       onFormReset: () => {
-        this.#closeEditForm();
+        closeEditForm();
       },
     });
 
-    render(passiveEditButtonComponent, this.#pointComponent.element);
     render(activeEditButtonComponent, editPointHeaderComponent.element);
-    render(editPointHeaderComponent, this.#editPointComponent.element, RenderPosition.AFTERBEGIN);
-    render(this.#pointComponent, this.#listComponent.element);
+    render(editPointHeaderComponent, editPointComponent.element, RenderPosition.AFTERBEGIN);
+
+    const pointComponent = new EventPointView({point});
+    render(passiveEditButtonComponent, pointComponent.element);
+    render(pointComponent, this.#listComponent.element);
+
+    function replaceCardToForm() {
+      replace(editPointComponent, pointComponent);
+    }
+
+    function replaceFormToCard() {
+      replace(pointComponent, editPointComponent);
+    }
+
+    function closeEditForm() {
+      replaceFormToCard();
+      document.removeEventListener('keydown', escKeyDownHandler);
+    }
   }
 
   #renderEvents() {
-    render(new ListSortView(), this.#eventsContainer);
+    const sort = generateSort();
+    render(new ListSortView({sort}), this.#eventsContainer);
     render(this.#listComponent, this.#eventsContainer);
+
+    if (!this.#eventsPoints.length) {
+      render(new ListEmptyView(), this.#eventsContainer);
+      return;
+    }
 
     for (const point of this.#eventsPoints) {
       this.#renderPoint(point);
     }
   }
-
-  #replaceCardToForm() {
-    replace(this.#editPointComponent, this.#pointComponent);
-  }
-
-  #replaceFormToCard() {
-    replace(this.#pointComponent, this.#editPointComponent);
-  }
-
-  #closeEditForm() {
-    this.#replaceFormToCard();
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
-  }
-
-  #escKeyDownHandler = (evt) => {
-    if (evt.key === KEY_ESCAPE) {
-      evt.preventDefault();
-      this.#closeEditForm();
-    }
-  };
 }

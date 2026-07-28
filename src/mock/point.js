@@ -1,5 +1,5 @@
 import { TYPES } from '../const';
-import { getRandomArrayElement } from '../utils';
+import { getRandomArrayElement } from '../utils/common';
 
 const mockPoints = [{
   id: '1',
