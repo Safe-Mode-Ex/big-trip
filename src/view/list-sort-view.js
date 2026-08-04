@@ -12,6 +12,7 @@ function createListSortTemplate(sort) {
             type="radio"
             name="trip-sort"
             value="sort-${type}"
+            data-sort-type="${type}"
             ${disabled ? 'disabled' : ''}
             ${type === SortType.DAY ? 'checked' : ''}
           >
@@ -24,13 +25,26 @@ function createListSortTemplate(sort) {
 
 export default class ListSortView extends AbstractView {
   #sort = null;
+  #handleSortTypeChange = null;
 
-  constructor({sort}) {
+  constructor({sort, onSortTypeChange}) {
     super();
+
     this.#sort = sort;
+    this.#handleSortTypeChange = onSortTypeChange;
+    this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
 
   get template() {
     return createListSortTemplate(this.#sort);
   }
+
+  #sortTypeChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    evt.preventDefault();
+    this.#handleSortTypeChange(evt.target.dataset.sortType);
+  };
 }
