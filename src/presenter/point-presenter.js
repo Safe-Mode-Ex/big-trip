@@ -6,18 +6,26 @@ import EditPointButtonView from '../view/edit-point-button-view';
 import EditPointHeaderView from '../view/edit-point-header-view';
 import FavoriteButtonView from '../view/favorite-button-view';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class PointPresenter {
   #pointListContainer = null;
   #pointComponent = null;
   #pointEditComponent = null;
 
   #point = null;
+  #mode = Mode.DEFAULT;
 
   #handleDataChange = null;
+  #handleModeChange = null;
 
-  constructor({pointListContainer, onDataChange}) {
+  constructor({pointListContainer, onDataChange, onModeChange}) {
     this.#pointListContainer = pointListContainer;
     this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   init(point) {
@@ -44,16 +52,22 @@ export default class PointPresenter {
       return;
     }
 
-    if (this.#pointListContainer.element.contains(prevPointComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if (this.#pointListContainer.element.contains(prevPointEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#pointEditComponent, prevPointEditComponent);
     }
 
     remove(prevPointComponent);
     remove(prevPointEditComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToCard();
+    }
   }
 
   destroy() {
@@ -115,10 +129,13 @@ export default class PointPresenter {
 
   #replaceFormToCard() {
     replace(this.#pointComponent, this.#pointEditComponent);
+    this.#mode = Mode.DEFAULT;
   }
 
   #replaceCardToForm() {
     replace(this.#pointEditComponent, this.#pointComponent);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #escKeyDownHandler = (evt) => {

@@ -64,7 +64,6 @@ export default class PointView extends AbstractView {
 
   constructor({point}) {
     super();
-
     this.#point = point;
   }
 
