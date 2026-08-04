@@ -8,7 +8,7 @@ function createEditPointTemplate() {
   `;
 }
 
-export default class EditPointViewButton extends AbstractView {
+export default class EditPointButtonView extends AbstractView {
   #handleClick = null;
 
   constructor({onClick}) {

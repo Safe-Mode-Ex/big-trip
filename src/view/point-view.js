@@ -17,7 +17,7 @@ function createSelectedOffersTemplate(offers) {
   `;
 }
 
-function createEventPointTemplate(point) {
+function createPointTemplate(point) {
   const {type, dateFrom, dateTo, basePrice, offers, destination} = point;
 
   const date = humanizePointDateFrom(dateFrom);
@@ -66,7 +66,7 @@ function createEventPointTemplate(point) {
   `;
 }
 
-export default class EventPointView extends AbstractView {
+export default class PointView extends AbstractView {
   #point = null;
 
   constructor({point}) {
@@ -76,6 +76,6 @@ export default class EventPointView extends AbstractView {
   }
 
   get template() {
-    return createEventPointTemplate(this.#point);
+    return createPointTemplate(this.#point);
   }
 }
