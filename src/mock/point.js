@@ -1,8 +1,8 @@
+import { nanoid } from 'nanoid';
 import { TYPES } from '../const';
 import { getRandomArrayElement } from '../utils/common';
 
 const mockPoints = [{
-  id: '1',
   type: getRandomArrayElement(TYPES),
   basePrice: 11000,
   dateFrom: '2019-07-10T22:55:56.845Z',
@@ -11,7 +11,6 @@ const mockPoints = [{
   isFavorite: false,
   offers: ['1', '2'],
 }, {
-  id: '2',
   type: getRandomArrayElement(TYPES),
   basePrice: 10000,
   dateFrom: '2019-07-10T12:00:56.845Z',
@@ -20,7 +19,6 @@ const mockPoints = [{
   isFavorite: false,
   offers: ['3', '4'],
 }, {
-  id: '3',
   type: getRandomArrayElement(TYPES),
   basePrice: 1000,
   dateFrom: '2019-07-10T13:00:56.845Z',
@@ -29,7 +27,6 @@ const mockPoints = [{
   isFavorite: false,
   offers: ['1', '2'],
 }, {
-  id: '4',
   type: getRandomArrayElement(TYPES),
   basePrice: 100,
   dateFrom: '2019-07-10T15:00:56.845Z',
@@ -40,7 +37,10 @@ const mockPoints = [{
 }];
 
 function getRandomPoint() {
-  return getRandomArrayElement(mockPoints);
+  return {
+    ...getRandomArrayElement(mockPoints),
+    id: nanoid(),
+  };
 }
 
 export {getRandomPoint};

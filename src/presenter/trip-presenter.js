@@ -5,14 +5,16 @@ import ListView from '../view/list-view';
 import ListEmptyView from '../view/list-empty-view';
 import PointPresenter from './point-presenter';
 
-export default class EventsPresenter {
+export default class TripPresenter {
   #listComponent = new ListView();
   #sortComponent = new ListSortView({sort: generateSort()});
   #emptyListComponent = new ListEmptyView();
 
+  #pointsPresenters = new Map();
+
   #eventsContainer = null;
   #pointsModel = null;
-  #eventsPoints = null;
+  #tripPoints = null;
 
   constructor({eventsContainer, pointsModel}) {
     this.#eventsContainer = eventsContainer;
@@ -20,7 +22,7 @@ export default class EventsPresenter {
   }
 
   init() {
-    this.#eventsPoints = [...this.#pointsModel.points];
+    this.#tripPoints = [...this.#pointsModel.points];
     this.#renderTrip();
   }
 
@@ -32,7 +34,7 @@ export default class EventsPresenter {
   #renderPointsList() {
     render(this.#listComponent, this.#eventsContainer);
 
-    if (!this.#eventsPoints.length) {
+    if (!this.#tripPoints.length) {
       this.#renderListEmpty();
       return;
     }
@@ -40,12 +42,17 @@ export default class EventsPresenter {
     this.#renderPoints();
   }
 
+  #clearPointsList() {
+    this.#pointsPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointsPresenters.clear();
+  }
+
   #renderListEmpty() {
     render(new ListEmptyView(), this.#eventsContainer);
   }
 
   #renderPoints() {
-    for (const point of this.#eventsPoints) {
+    for (const point of this.#tripPoints) {
       this.#renderPoint(point);
     }
   }
@@ -56,6 +63,7 @@ export default class EventsPresenter {
     });
 
     pointPresenter.init(point);
+    this.#pointsPresenters.set(point.id, pointPresenter);
   }
 
   #renderSort() {

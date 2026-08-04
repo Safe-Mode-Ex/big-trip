@@ -48,6 +48,11 @@ export default class PointPresenter {
     remove(prevPointEditComponent);
   }
 
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
+  }
+
   #renderPointEditHeader() {
     const activeEditButtonComponent = new EditPointButtonView({
       onClick: () => {
