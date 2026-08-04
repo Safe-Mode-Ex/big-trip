@@ -1,6 +1,6 @@
 import { render } from './framework/render';
 import ListFilterView from './view/list-filter-view';
-import EventsPresenter from './presenter/events-presenter';
+import TripPresenter from './presenter/trip-presenter';
 import PointsModel from './model/points-model';
 import { generateFilter } from './mock/filter';
 
@@ -11,7 +11,7 @@ const filtersElement = headerElement.querySelector('.trip-controls__filters');
 const eventsElement = mainElement.querySelector('.trip-events');
 
 const pointsModel = new PointsModel();
-const eventsPresenter = new EventsPresenter({
+const eventsPresenter = new TripPresenter({
   eventsContainer: eventsElement,
   pointsModel,
 });
