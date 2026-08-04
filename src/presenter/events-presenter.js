@@ -11,6 +11,9 @@ import ListEmptyView from '../view/list-empty-view';
 
 export default class EventsPresenter {
   #listComponent = new ListView();
+  #sortComponent = new ListSortView({sort: generateSort()});
+  #emptyListComponent = new ListEmptyView();
+
   #eventsContainer = null;
   #pointsModel = null;
   #eventsPoints = null;
@@ -22,7 +25,33 @@ export default class EventsPresenter {
 
   init() {
     this.#eventsPoints = [...this.#pointsModel.points];
-    this.#renderEvents();
+    this.#renderTrip();
+  }
+
+  #renderTrip() {
+    this.#renderSort();
+    this.#renderPointsList();
+  }
+
+  #renderPointsList() {
+    render(this.#listComponent, this.#eventsContainer);
+
+    if (!this.#eventsPoints.length) {
+      this.#renderListEmpty();
+      return;
+    }
+
+    this.#renderPoints();
+  }
+
+  #renderListEmpty() {
+    render(new ListEmptyView(), this.#eventsContainer);
+  }
+
+  #renderPoints() {
+    for (const point of this.#eventsPoints) {
+      this.#renderPoint(point);
+    }
   }
 
   #renderPoint(point) {
@@ -78,18 +107,7 @@ export default class EventsPresenter {
     }
   }
 
-  #renderEvents() {
-    const sort = generateSort();
-    render(new ListSortView({sort}), this.#eventsContainer);
-    render(this.#listComponent, this.#eventsContainer);
-
-    if (!this.#eventsPoints.length) {
-      render(new ListEmptyView(), this.#eventsContainer);
-      return;
-    }
-
-    for (const point of this.#eventsPoints) {
-      this.#renderPoint(point);
-    }
+  #renderSort() {
+    render(this.#sortComponent, this.#eventsContainer);
   }
 }
