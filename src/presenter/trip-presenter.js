@@ -1,4 +1,5 @@
 import { render } from '../framework/render';
+import { updateItem } from '../utils/common';
 import { generateSort } from '../mock/sort';
 import ListSortView from '../view/list-sort-view';
 import ListView from '../view/list-view';
@@ -60,6 +61,7 @@ export default class TripPresenter {
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({
       pointListContainer: this.#listComponent,
+      onDataChange: this.#handlePointChange,
     });
 
     pointPresenter.init(point);
@@ -69,4 +71,9 @@ export default class TripPresenter {
   #renderSort() {
     render(this.#sortComponent, this.#eventsContainer);
   }
+
+  #handlePointChange = (updatedPoint) => {
+    this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#pointsPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
 }

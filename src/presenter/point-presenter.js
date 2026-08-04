@@ -4,6 +4,7 @@ import EditPointView from '../view/edit-point-view';
 import PointView from '../view/point-view';
 import EditPointButtonView from '../view/edit-point-button-view';
 import EditPointHeaderView from '../view/edit-point-header-view';
+import FavoriteButtonView from '../view/favorite-button-view';
 
 export default class PointPresenter {
   #pointListContainer = null;
@@ -12,8 +13,11 @@ export default class PointPresenter {
 
   #point = null;
 
-  constructor({pointListContainer}) {
+  #handleDataChange = null;
+
+  constructor({pointListContainer, onDataChange}) {
     this.#pointListContainer = pointListContainer;
+    this.#handleDataChange = onDataChange;
   }
 
   init(point) {
@@ -22,7 +26,11 @@ export default class PointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    this.#pointComponent = new PointView({point: this.#point});
+    this.#pointComponent = new PointView({
+      point: this.#point,
+      onFavoriteClick: this.#handleFavoriteClick,
+    });
+    this.#renderPointActionButtons();
 
     this.#pointEditComponent = new EditPointView({
       point: this.#point,
@@ -36,11 +44,11 @@ export default class PointPresenter {
       return;
     }
 
-    if (this.#pointListContainer.contains(prevPointComponent.element)) {
+    if (this.#pointListContainer.element.contains(prevPointComponent.element)) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if (this.#pointListContainer.contains(prevPointEditComponent.element)) {
+    if (this.#pointListContainer.element.contains(prevPointEditComponent.element)) {
       replace(this.#pointEditComponent, prevPointEditComponent);
     }
 
@@ -66,7 +74,12 @@ export default class PointPresenter {
     render(editPointHeaderComponent, this.#pointEditComponent.element, RenderPosition.AFTERBEGIN);
   }
 
-  #renderPoint() {
+  #renderPointActionButtons() {
+    const favoriteButtonComponent = new FavoriteButtonView({
+      isFavorite: this.#point.isFavorite,
+      onClick: this.#handleFavoriteClick,
+    });
+
     const passiveEditButtonComponent = new EditPointButtonView({
       onClick: () => {
         this.#replaceCardToForm();
@@ -74,16 +87,25 @@ export default class PointPresenter {
       },
     });
 
+    render(favoriteButtonComponent, this.#pointComponent.element);
     render(passiveEditButtonComponent, this.#pointComponent.element);
+  }
+
+  #renderPoint() {
     render(this.#pointComponent, this.#pointListContainer.element);
   }
 
   #handleFormSubmit = () => {
+    this.#handleDataChange(this.#point);
     this.#closeEditForm();
   };
 
   #handleFormReset = () => {
     this.#closeEditForm();
+  };
+
+  #handleFavoriteClick = () => {
+    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
   };
 
   #closeEditForm() {
