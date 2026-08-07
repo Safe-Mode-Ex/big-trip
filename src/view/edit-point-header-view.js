@@ -106,20 +106,31 @@ function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, bas
 
       <button class="event__save-btn btn btn--blue" type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Cancel</button>
+
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>
     </header>
   `;
 }
 
 export default class EditPointHeaderView extends AbstractStatefulView {
-  constructor({point}) {
+  #handleEditFormClose = null;
+
+  constructor({point, onClose}) {
     super();
 
+    this.#handleEditFormClose = onClose;
     this._setState(point);
     this._restoreHandlers();
   }
 
   get template() {
     return createEditPointHeaderTemplate(this._state);
+  }
+
+  reset(point) {
+    this.updateElement(point);
   }
 
   #changeTypeHandler = (evt) => {
@@ -168,7 +179,14 @@ export default class EditPointHeaderView extends AbstractStatefulView {
     });
   };
 
+  #closeEditFormHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditFormClose();
+  };
+
   _restoreHandlers = () => {
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#closeEditFormHandler);
     this.element.querySelector('.event__type-list')
       .addEventListener('change', this.#changeTypeHandler);
     this.element.querySelector('.event__input--destination')
