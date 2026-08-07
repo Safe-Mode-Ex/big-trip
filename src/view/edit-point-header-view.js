@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import AbstractView from '../framework/view/abstract-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { TYPES } from '../const';
 import { mockDestinations } from '../mock/destination';
 
@@ -19,7 +19,7 @@ function createEventTypeList() {
                 class="event__type-input visually-hidden"
                 type="radio"
                 name="event-type"
-                value="${eventType}"
+                value="${type}"
               >
               <label
                 class="event__type-label event__type-label--${eventType}"
@@ -110,15 +110,72 @@ function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, bas
   `;
 }
 
-export default class EditPointHeaderView extends AbstractView {
-  #point = null;
-
+export default class EditPointHeaderView extends AbstractStatefulView {
   constructor({point}) {
     super();
-    this.#point = point;
+
+    this._setState(point);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEditPointHeaderTemplate(this.#point);
+    return createEditPointHeaderTemplate(this._state);
   }
+
+  #changeTypeHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    evt.preventDefault();
+
+    this.updateElement({
+      type: evt.target.value,
+    });
+  };
+
+  #changeDestinationHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      destination: {
+        name: evt.target.value,
+      },
+    });
+  };
+
+  #changePriceHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      basePrice: evt.target.value,
+    });
+  };
+
+  #changeDateFromHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      dateFrom: evt.target.value,
+    });
+  };
+
+  #changeDateToHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      dateTo: evt.target.value,
+    });
+  };
+
+  _restoreHandlers = () => {
+    this.element.querySelector('.event__type-list')
+      .addEventListener('change', this.#changeTypeHandler);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('[name=event-start-time]')
+      .addEventListener('change', this.#changeDateFromHandler);
+    this.element.querySelector('[name=event-end-time]')
+      .addEventListener('change', this.#changeDateToHandler);
+  };
 }

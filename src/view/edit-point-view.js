@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { mockOffers } from '../mock/offer';
 
 function createEditPointDetailsTemplate({type, offers, destination}) {
@@ -75,15 +75,14 @@ function createEditPointTemplate(point) {
   `;
 }
 
-export default class EditPointView extends AbstractView {
-  #point = null;
+export default class EditPointView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleFormReset = null;
 
   constructor({point, onFormSubmit, onFormReset}) {
     super();
 
-    this.#point = point;
+    this._setState(point);
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormReset = onFormReset;
 
@@ -92,7 +91,7 @@ export default class EditPointView extends AbstractView {
   }
 
   get template() {
-    return createEditPointTemplate(this.#point);
+    return createEditPointTemplate(this._state);
   }
 
   #formSubmitHandler = (evt) => {
@@ -104,4 +103,6 @@ export default class EditPointView extends AbstractView {
     evt.preventDefault();
     this.#handleFormReset();
   };
+
+  _restoreHandlers() {}
 }
