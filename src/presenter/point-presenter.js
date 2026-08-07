@@ -1,8 +1,7 @@
-import { remove, render, RenderPosition, replace } from '../framework/render';
+import { remove, render, replace } from '../framework/render';
 import { KEY_ESCAPE } from '../const';
 import EditPointView from '../view/edit-point-view';
 import PointView from '../view/point-view';
-import EditPointHeaderView from '../view/edit-point-header-view';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -13,7 +12,6 @@ export default class PointPresenter {
   #pointListContainer = null;
   #pointComponent = null;
   #pointEditComponent = null;
-  #pointEditHeaderComponent = null;
 
   #point = null;
   #mode = Mode.DEFAULT;
@@ -46,8 +44,10 @@ export default class PointPresenter {
       point: this.#point,
       onFormSubmit: this.#handleFormSubmit,
       onFormReset: this.#handleFormReset,
+      onClose: () => {
+        this.#closeEditForm();
+      },
     });
-    this.#renderPointEditHeader();
 
     if (!prevPointComponent || !prevPointEditComponent) {
       this.#renderPoint();
@@ -68,7 +68,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
-      this.#pointEditHeaderComponent.reset(this.#point);
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   }
@@ -76,17 +76,6 @@ export default class PointPresenter {
   destroy() {
     remove(this.#pointComponent);
     remove(this.#pointEditComponent);
-  }
-
-  #renderPointEditHeader() {
-    this.#pointEditHeaderComponent = new EditPointHeaderView({
-      point: this.#point,
-      onClose: () => {
-        this.#closeEditForm();
-      },
-    });
-
-    render(this.#pointEditHeaderComponent, this.#pointEditComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderPoint() {
@@ -107,7 +96,7 @@ export default class PointPresenter {
   };
 
   #closeEditForm() {
-    this.#pointEditHeaderComponent.reset(this.#point);
+    this.#pointEditComponent.reset(this.#point);
     this.#replaceFormToCard();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }

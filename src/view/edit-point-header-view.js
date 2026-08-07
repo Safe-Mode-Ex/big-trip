@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import AbstractView from '../framework/view/abstract-view';
 import { TYPES } from '../const';
 import { mockDestinations } from '../mock/destination';
 
@@ -114,86 +114,15 @@ function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, bas
   `;
 }
 
-export default class EditPointHeaderView extends AbstractStatefulView {
-  #handleEditFormClose = null;
+export default class EditPointHeaderView extends AbstractView {
+  #point = null;
 
-  constructor({point, onClose}) {
+  constructor({point}) {
     super();
-
-    this.#handleEditFormClose = onClose;
-    this._setState(point);
-    this._restoreHandlers();
+    this.#point = point;
   }
 
   get template() {
-    return createEditPointHeaderTemplate(this._state);
+    return createEditPointHeaderTemplate(this.#point);
   }
-
-  reset(point) {
-    this.updateElement(point);
-  }
-
-  #changeTypeHandler = (evt) => {
-    if (evt.target.tagName !== 'INPUT') {
-      return;
-    }
-
-    evt.preventDefault();
-
-    this.updateElement({
-      type: evt.target.value,
-    });
-  };
-
-  #changeDestinationHandler = (evt) => {
-    evt.preventDefault();
-
-    this.updateElement({
-      destination: {
-        name: evt.target.value,
-      },
-    });
-  };
-
-  #changePriceHandler = (evt) => {
-    evt.preventDefault();
-
-    this.updateElement({
-      basePrice: evt.target.value,
-    });
-  };
-
-  #changeDateFromHandler = (evt) => {
-    evt.preventDefault();
-
-    this.updateElement({
-      dateFrom: evt.target.value,
-    });
-  };
-
-  #changeDateToHandler = (evt) => {
-    evt.preventDefault();
-
-    this.updateElement({
-      dateTo: evt.target.value,
-    });
-  };
-
-  #closeEditFormHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleEditFormClose();
-  };
-
-  _restoreHandlers = () => {
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#closeEditFormHandler);
-    this.element.querySelector('.event__type-list')
-      .addEventListener('change', this.#changeTypeHandler);
-    this.element.querySelector('.event__input--destination')
-      .addEventListener('change', this.#changeDestinationHandler);
-    this.element.querySelector('[name=event-start-time]')
-      .addEventListener('change', this.#changeDateFromHandler);
-    this.element.querySelector('[name=event-end-time]')
-      .addEventListener('change', this.#changeDateToHandler);
-  };
 }
