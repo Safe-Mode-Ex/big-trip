@@ -1,5 +1,7 @@
-import AbstractView from '../framework/view/abstract-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { mockOffers } from '../mock/offer';
+import { mockDestinations } from '../mock/destination';
+import EditPointHeaderView from '../view/edit-point-header-view';
 
 function createEditPointDetailsTemplate({type, offers, destination}) {
   const offersByType = mockOffers.find((offer) => offer.type === type);
@@ -65,34 +67,42 @@ function createEditPointDetailsTemplate({type, offers, destination}) {
   `;
 }
 
-function createEditPointTemplate(point) {
+function createEditPointTemplate(point, headerElement) {
   const {type, destination, offers} = point;
 
   return `
     <form class="event event--edit" action="#" method="post">
+      ${headerElement.outerHTML}
       ${createEditPointDetailsTemplate({type, offers, destination})}
     </form>
   `;
 }
 
-export default class EditPointView extends AbstractView {
-  #point = null;
+export default class EditPointView extends AbstractStatefulView {
+  #headerView = null;
   #handleFormSubmit = null;
   #handleFormReset = null;
+  #handleEditFormClose = null;
 
-  constructor({point, onFormSubmit, onFormReset}) {
+  constructor({point, onFormSubmit, onFormReset, onClose}) {
     super();
 
-    this.#point = point;
+    this._setState(point);
+
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormReset = onFormReset;
+    this.#handleEditFormClose = onClose;
 
-    this.element.addEventListener('submit', this.#formSubmitHandler);
-    this.element.addEventListener('reset', this.#formResetHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEditPointTemplate(this.#point);
+    this.#headerView = new EditPointHeaderView({point: this._state});
+    return createEditPointTemplate(this._state, this.#headerView.element);
+  }
+
+  reset(point) {
+    this.updateElement(point);
   }
 
   #formSubmitHandler = (evt) => {
@@ -103,5 +113,74 @@ export default class EditPointView extends AbstractView {
   #formResetHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormReset();
+  };
+
+  #changeTypeHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    evt.preventDefault();
+
+    this.updateElement({
+      type: evt.target.value,
+    });
+  };
+
+  #changeDestinationHandler = (evt) => {
+    evt.preventDefault();
+
+    const destination = mockDestinations.find(({name}) => name === evt.target.value);
+
+    if (!destination) {
+      return;
+    }
+
+    this.updateElement({destination});
+  };
+
+  #changePriceHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      basePrice: evt.target.value,
+    });
+  };
+
+  #changeDateFromHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      dateFrom: evt.target.value,
+    });
+  };
+
+  #changeDateToHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      dateTo: evt.target.value,
+    });
+  };
+
+  #closeEditFormHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditFormClose();
+  };
+
+  _restoreHandlers = () => {
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#closeEditFormHandler);
+    this.element.querySelector('.event__type-list')
+      .addEventListener('change', this.#changeTypeHandler);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('[name=event-start-time]')
+      .addEventListener('change', this.#changeDateFromHandler);
+    this.element.querySelector('[name=event-end-time]')
+      .addEventListener('change', this.#changeDateToHandler);
+
+    this.element.addEventListener('submit', this.#formSubmitHandler);
+    this.element.addEventListener('reset', this.#formResetHandler);
   };
 }

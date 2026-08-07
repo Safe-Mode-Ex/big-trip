@@ -18,7 +18,7 @@ function createSelectedOffersTemplate(offers) {
 }
 
 function createPointTemplate(point) {
-  const {type, dateFrom, dateTo, basePrice, offers, destination} = point;
+  const {type, dateFrom, dateTo, basePrice, offers, destination, isFavorite} = point;
 
   const date = humanizePointDateFrom(dateFrom);
   const dateTime = getDateTime(dateFrom);
@@ -55,19 +55,50 @@ function createPointTemplate(point) {
       </p>
 
       ${offers.length ? createSelectedOffersTemplate(offers) : ''}
+
+      <button class="event__favorite-btn${isFavorite ? ' event__favorite-btn--active' : ''}" type="button">
+        <span class="visually-hidden">Add to favorite</span>
+        <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+          <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+        </svg>
+      </button>
+
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Close event</span>
+      </button>
     </div>
   `;
 }
 
 export default class PointView extends AbstractView {
   #point = null;
+  #handleEditOpen = null;
+  #handleFavoriteClick = null;
 
-  constructor({point}) {
+  constructor({point, onEditClick, onFavoriteClick}) {
     super();
+
     this.#point = point;
+    this.#handleEditOpen = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#openEditFormHandler);
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#clickFavoriteHandler);
   }
 
   get template() {
     return createPointTemplate(this.#point);
   }
+
+  #openEditFormHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditOpen();
+  };
+
+  #clickFavoriteHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+  };
 }
