@@ -1,6 +1,9 @@
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { mockOffers } from '../mock/offer';
 import { mockDestinations } from '../mock/destination';
+import { FLATPICKR_DATE_FORMAT } from '../const';
 import EditPointHeaderView from '../view/edit-point-header-view';
 
 function createEditPointDetailsTemplate({type, offers, destination}) {
@@ -80,6 +83,9 @@ function createEditPointTemplate(point, headerElement) {
 
 export default class EditPointView extends AbstractStatefulView {
   #headerView = null;
+  #dateFromPicker = null;
+  #dateToPicker = null;
+
   #handleFormSubmit = null;
   #handleFormReset = null;
   #handleEditFormClose = null;
@@ -101,8 +107,62 @@ export default class EditPointView extends AbstractStatefulView {
     return createEditPointTemplate(this._state, this.#headerView.element);
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#dateFromPicker) {
+      this.#dateFromPicker.destroy();
+      this.#dateFromPicker = null;
+    }
+  }
+
   reset(point) {
     this.updateElement(point);
+  }
+
+  #setDatepicker() {
+    const commonConfig = {
+      dateFormat: FLATPICKR_DATE_FORMAT,
+      enableTime: true,
+    };
+
+    this.#dateFromPicker = flatpickr(
+      this.element.querySelector('[name=event-start-time]'),
+      {
+        ...commonConfig,
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        onChange: this.#dateFromChangeHandler,
+      }
+    );
+
+    this.#dateToPicker = flatpickr(
+      this.element.querySelector('[name=event-end-time]'),
+      {
+        ...commonConfig,
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        onChange: this.#dateToChangeHandler,
+      }
+    );
+  }
+
+  #dateFromChangeHandler = ([dateFrom]) => {
+    this.#syncRangeLimits();
+    this.updateElement({dateFrom});
+  };
+
+  #dateToChangeHandler = ([dateTo]) => {
+    this.#syncRangeLimits();
+    this.updateElement({dateTo});
+  };
+
+  #syncRangeLimits() {
+    const from = this.#dateFromPicker.selectedDates[0];
+    const to = this.#dateToPicker.selectedDates[0];
+
+    this.#dateFromPicker.set('maxDate', to ?? undefined);
+    this.#dateToPicker.set('minDate', from ?? undefined);
   }
 
   #formSubmitHandler = (evt) => {
@@ -147,22 +207,6 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
-  #changeDateFromHandler = (evt) => {
-    evt.preventDefault();
-
-    this.updateElement({
-      dateFrom: evt.target.value,
-    });
-  };
-
-  #changeDateToHandler = (evt) => {
-    evt.preventDefault();
-
-    this.updateElement({
-      dateTo: evt.target.value,
-    });
-  };
-
   #closeEditFormHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditFormClose();
@@ -175,12 +219,10 @@ export default class EditPointView extends AbstractStatefulView {
       .addEventListener('change', this.#changeTypeHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#changeDestinationHandler);
-    this.element.querySelector('[name=event-start-time]')
-      .addEventListener('change', this.#changeDateFromHandler);
-    this.element.querySelector('[name=event-end-time]')
-      .addEventListener('change', this.#changeDateToHandler);
 
     this.element.addEventListener('submit', this.#formSubmitHandler);
     this.element.addEventListener('reset', this.#formResetHandler);
+
+    this.#setDatepicker();
   };
 }

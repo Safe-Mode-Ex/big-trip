@@ -20,5 +20,17 @@ const MS_IN_HOUR = MS_IN_SEC * SEC_IN_MIN * MIN_IN_HOUR;
 const MS_IN_DAY = MS_IN_HOUR * HOUR_IN_DAY;
 const DEC_RADIX = 10;
 const KEY_ESCAPE = 'Escape';
+const EVENT_DATE_FORMAT = 'DD/MM/YY HH:mm';
+const FLATPICKR_DATE_FORMAT = 'd/m/y H:i';
 
-export {TYPES, FilterType, SortType, MS_IN_HOUR, MS_IN_DAY, DEC_RADIX, KEY_ESCAPE};
+export {
+  TYPES,
+  FilterType,
+  SortType,
+  MS_IN_HOUR,
+  MS_IN_DAY,
+  DEC_RADIX,
+  KEY_ESCAPE,
+  EVENT_DATE_FORMAT,
+  FLATPICKR_DATE_FORMAT,
+};

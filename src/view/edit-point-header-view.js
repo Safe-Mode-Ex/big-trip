@@ -1,9 +1,7 @@
 import dayjs from 'dayjs';
 import AbstractView from '../framework/view/abstract-view';
-import { TYPES } from '../const';
+import { TYPES, EVENT_DATE_FORMAT } from '../const';
 import { mockDestinations } from '../mock/destination';
-
-const EVENT_DATE_FORMAT = 'DD/MM/YY HH:mm';
 
 function createEventTypeList() {
   return `
