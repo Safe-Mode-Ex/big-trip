@@ -114,6 +114,11 @@ export default class EditPointView extends AbstractStatefulView {
       this.#dateFromPicker.destroy();
       this.#dateFromPicker = null;
     }
+
+    if (this.#dateToPicker) {
+      this.#dateToPicker.destroy();
+      this.#dateToPicker = null;
+    }
   }
 
   reset(point) {
