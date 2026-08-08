@@ -124,6 +124,7 @@ export default class EditPointView extends AbstractStatefulView {
     const commonConfig = {
       dateFormat: FLATPICKR_DATE_FORMAT,
       enableTime: true,
+      static: true,
     };
 
     this.#dateFromPicker = flatpickr(
