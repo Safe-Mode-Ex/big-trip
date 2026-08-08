@@ -21,7 +21,6 @@
     "babel-loader": "9.1.2",
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "6.7.3",
-    "dayjs": "1.11.7",
     "eslint": "8.38.0",
     "eslint-config-htmlacademy": "9.0.0",
     "html-webpack-plugin": "5.5.1",
@@ -35,6 +34,7 @@
     "node": "20"
   },
   "dependencies": {
+    "dayjs": "1.11.7",
     "flatpickr": "4.6.13"
   }
 }
