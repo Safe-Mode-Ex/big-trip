@@ -138,7 +138,6 @@ export default class EditPointView extends AbstractStatefulView {
       {
         ...commonConfig,
         defaultDate: this._state.dateFrom,
-        maxDate: this._state.dateTo,
         onChange: this.#dateFromChangeHandler,
       }
     );
@@ -156,19 +155,16 @@ export default class EditPointView extends AbstractStatefulView {
 
   #dateFromChangeHandler = ([dateFrom]) => {
     this.#syncRangeLimits();
-    this.updateElement({dateFrom});
+    this._setState({dateFrom});
   };
 
   #dateToChangeHandler = ([dateTo]) => {
     this.#syncRangeLimits();
-    this.updateElement({dateTo});
+    this._setState({dateTo});
   };
 
   #syncRangeLimits() {
     const from = this.#dateFromPicker.selectedDates[0];
-    const to = this.#dateToPicker.selectedDates[0];
-
-    this.#dateFromPicker.set('maxDate', to ?? undefined);
     this.#dateToPicker.set('minDate', from ?? undefined);
   }
 
