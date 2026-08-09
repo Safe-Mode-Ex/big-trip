@@ -6,8 +6,9 @@ import { mockDestinations } from '../mock/destination';
 import { FLATPICKR_DATE_FORMAT } from '../const';
 import EditPointHeaderView from '../view/edit-point-header-view';
 
-function createEditPointDetailsTemplate({type, offers, destination}) {
-  const offersByType = mockOffers.find((offer) => offer.type === type);
+const OFFER_ID_REGEXP = /-([^-]+)$/;
+
+function createEditPointDetailsTemplate({offersByType, offers, destination}) {
   const allOffers = offersByType ? offersByType.offers.filter(({id}) => !offers.some((offer) => id === offer.id)) : [];
   const hasOffers = Boolean(offers.length || allOffers.length);
 
@@ -24,7 +25,7 @@ function createEditPointDetailsTemplate({type, offers, destination}) {
                     class="event__offer-checkbox visually-hidden"
                     id="event-offer-${id}"
                     type="checkbox"
-                    name="event-offer-${id}"
+                    name="event-offer[]"
                     checked
                   >
                   <label class="event__offer-label" for="event-offer-${id}">
@@ -70,18 +71,20 @@ function createEditPointDetailsTemplate({type, offers, destination}) {
   `;
 }
 
-function createEditPointTemplate(point, headerElement) {
-  const {type, destination, offers} = point;
+function createEditPointTemplate(point, headerElement, offersByType) {
+  const {destination, offers} = point;
 
   return `
     <form class="event event--edit" action="#" method="post">
       ${headerElement.outerHTML}
-      ${createEditPointDetailsTemplate({type, offers, destination})}
+      ${createEditPointDetailsTemplate({offersByType, offers, destination})}
     </form>
   `;
 }
 
 export default class EditPointView extends AbstractStatefulView {
+  #offersByType = null;
+
   #headerView = null;
   #dateFromPicker = null;
   #dateToPicker = null;
@@ -94,6 +97,7 @@ export default class EditPointView extends AbstractStatefulView {
     super();
 
     this._setState(point);
+    this.#offersByType = mockOffers.find((offer) => offer.type === point.type);
 
     this.#handleFormSubmit = onFormSubmit;
     this.#handleDeleteClick = onDeleteClick;
@@ -104,7 +108,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   get template() {
     this.#headerView = new EditPointHeaderView({point: this._state});
-    return createEditPointTemplate(this._state, this.#headerView.element);
+    return createEditPointTemplate(this._state, this.#headerView.element, this.#offersByType);
   }
 
   removeElement() {
@@ -210,12 +214,28 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
+  #changeOffersHandler = (evt) => {
+    const offerId = evt.target.id.match(OFFER_ID_REGEXP)[1];
+
+    const offers = evt.target.checked ?
+      [...this._state.offers, this.#offersByType.offers.find(({id}) => id === offerId)] :
+      this._state.offers.filter(({id}) => id !== offerId);
+
+    this.updateElement({offers});
+  };
+
   #closeEditFormHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditFormClose();
   };
 
   _restoreHandlers = () => {
+    const offersElement = this.element.querySelector('.event__available-offers');
+
+    if (offersElement) {
+      offersElement.addEventListener('change', this.#changeOffersHandler);
+    }
+
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#closeEditFormHandler);
     this.element.querySelector('.event__type-list')
