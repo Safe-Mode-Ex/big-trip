@@ -1,5 +1,5 @@
 import { remove, render, replace } from '../framework/render';
-import { KEY_ESCAPE } from '../const';
+import { KEY_ESCAPE, UserAction, UpdateType } from '../const';
 import EditPointView from '../view/edit-point-view';
 import PointView from '../view/point-view';
 
@@ -83,7 +83,11 @@ export default class PointPresenter {
   }
 
   #handleFormSubmit = () => {
-    this.#handleDataChange(this.#point);
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      this.#point
+    );
     this.#closeEditForm();
   };
 
@@ -92,7 +96,11 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite}
+    );
   };
 
   #closeEditForm() {
