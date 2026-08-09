@@ -87,16 +87,16 @@ export default class EditPointView extends AbstractStatefulView {
   #dateToPicker = null;
 
   #handleFormSubmit = null;
-  #handleFormReset = null;
+  #handleDeleteClick = null;
   #handleEditFormClose = null;
 
-  constructor({point, onFormSubmit, onFormReset, onClose}) {
+  constructor({point, onFormSubmit, onDeleteClick, onClose}) {
     super();
 
     this._setState(point);
 
     this.#handleFormSubmit = onFormSubmit;
-    this.#handleFormReset = onFormReset;
+    this.#handleDeleteClick = onDeleteClick;
     this.#handleEditFormClose = onClose;
 
     this._restoreHandlers();
@@ -170,12 +170,12 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this._state);
   };
 
-  #formResetHandler = (evt) => {
+  #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormReset();
+    this.#handleDeleteClick(this._state);
   };
 
   #changeTypeHandler = (evt) => {
@@ -222,9 +222,11 @@ export default class EditPointView extends AbstractStatefulView {
       .addEventListener('change', this.#changeTypeHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('.event__input--price')
+      .addEventListener('change', this.#changePriceHandler);
 
     this.element.addEventListener('submit', this.#formSubmitHandler);
-    this.element.addEventListener('reset', this.#formResetHandler);
+    this.element.addEventListener('reset', this.#formDeleteClickHandler);
 
     this.#setDatepicker();
   };

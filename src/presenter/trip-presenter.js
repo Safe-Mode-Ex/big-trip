@@ -1,7 +1,6 @@
 import { remove, render } from '../framework/render';
 import { SortType, UpdateType, UserAction } from '../const';
 import { sort } from '../utils/sort';
-import { generateSort } from '../mock/sort';
 import ListSortView from '../view/list-sort-view';
 import ListView from '../view/list-view';
 import ListEmptyView from '../view/list-empty-view';
@@ -35,10 +34,6 @@ export default class TripPresenter {
 
   #renderTrip() {
     this.#renderSort();
-    this.#renderPointsList();
-  }
-
-  #renderPointsList() {
     render(this.#listComponent, this.#eventsContainer);
 
     if (!this.points.length) {
@@ -94,14 +89,14 @@ export default class TripPresenter {
 
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
-      case UserAction.UPDATE_TASK:
-        this.#pointsModel.updateTask(updateType, update);
+      case UserAction.UPDATE_POINT:
+        this.#pointsModel.updatePoint(updateType, update);
         break;
-      case UserAction.ADD_TASK:
-        this.#pointsModel.addTask(updateType, update);
+      case UserAction.ADD_POINT:
+        this.#pointsModel.addPoint(updateType, update);
         break;
-      case UserAction.DELETE_TASK:
-        this.#pointsModel.deleteTask(updateType, update);
+      case UserAction.DELETE_POINT:
+        this.#pointsModel.deletePoint(updateType, update);
         break;
     }
   };

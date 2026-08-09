@@ -33,10 +33,14 @@ export default class PointsModel extends Observable {
     }
 
     this.#points = [
-      ...this.#points.slice(0, index),
+      ...this.points.slice(0, index),
       update,
-      this.#points.slice(index + 1),
-    ];
+      ...this.points.slice(index + 1),
+    ].map((point) => ({
+      ...point,
+      destination: point.destination.id,
+      offers: point.offers.length ? point.offers.map(({id}) => id) : [],
+    }));
 
     this._notify(updateType, update);
   }

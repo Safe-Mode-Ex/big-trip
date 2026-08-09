@@ -1,5 +1,6 @@
 import { remove, render, replace } from '../framework/render';
 import { KEY_ESCAPE, UserAction, UpdateType } from '../const';
+import { isDatesEqual } from '../utils/point';
 import EditPointView from '../view/edit-point-view';
 import PointView from '../view/point-view';
 
@@ -43,7 +44,7 @@ export default class PointPresenter {
     this.#pointEditComponent = new EditPointView({
       point: this.#point,
       onFormSubmit: this.#handleFormSubmit,
-      onFormReset: this.#handleFormReset,
+      onDeleteClick: this.#handleDeleteClick,
       onClose: () => {
         this.#closeEditForm();
       },
@@ -82,17 +83,25 @@ export default class PointPresenter {
     render(this.#pointComponent, this.#pointListContainer.element);
   }
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate =
+      !isDatesEqual(this.#point.dateFrom, update.dateFrom) ||
+      !isDatesEqual(this.#point.dateTo, update.dateTo);
+
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
-      UpdateType.MINOR,
-      this.#point
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
     );
     this.#closeEditForm();
   };
 
-  #handleFormReset = () => {
-    this.#closeEditForm();
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 
   #handleFavoriteClick = () => {

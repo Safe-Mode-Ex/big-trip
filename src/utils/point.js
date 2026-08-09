@@ -34,9 +34,14 @@ function getDurationString(dateFrom, dateTo) {
     }, '');
 }
 
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
 export {
   humanizePointDateFrom,
   humanizePointTime,
   getDateTime,
   getDurationString,
+  isDatesEqual,
 };
