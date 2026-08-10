@@ -3,7 +3,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { mockOffers } from '../mock/offer';
 import { mockDestinations } from '../mock/destination';
-import { FLATPICKR_DATE_FORMAT } from '../const';
+import { EMPTY_POINT, FLATPICKR_DATE_FORMAT } from '../const';
 import EditPointHeaderView from '../view/edit-point-header-view';
 
 const OFFER_ID_REGEXP = /-([^-]+)$/;
@@ -55,18 +55,20 @@ function createEditPointDetailsTemplate({offersByType, offers, destination}) {
         </section>
       `) : ''}
 
-      <section class="event__section event__section--destination">
-        <h3 class="event__section-title event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${destination.description}</p>
+      ${destination ? (`
+        <section class="event__section event__section--destination">
+          <h3 class="event__section-title event__section-title--destination">Destination</h3>
+          <p class="event__destination-description">${destination.description}</p>
 
-        <div class="event__photos-container">
-          <div class="event__photos-tape">
-            ${destination.pictures.map(({src, description}) => (`
-              <img class="event__photo" src="${src}" alt="${description}">
-            `)).join('')}
+          <div class="event__photos-container">
+            <div class="event__photos-tape">
+              ${destination.pictures.map(({src, description}) => (`
+                <img class="event__photo" src="${src}" alt="${description}">
+              `)).join('')}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      `) : ''}
     </section>
   `;
 }
@@ -93,11 +95,11 @@ export default class EditPointView extends AbstractStatefulView {
   #handleDeleteClick = null;
   #handleEditFormClose = null;
 
-  constructor({point, onFormSubmit, onDeleteClick, onClose}) {
+  constructor({point = EMPTY_POINT, onFormSubmit, onDeleteClick, onClose}) {
     super();
 
     this._setState(point);
-    this.#offersByType = mockOffers.find((offer) => offer.type === point.type);
+    this.#setOffersByType();
 
     this.#handleFormSubmit = onFormSubmit;
     this.#handleDeleteClick = onDeleteClick;
@@ -108,6 +110,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   get template() {
     this.#headerView = new EditPointHeaderView({point: this._state});
+    this.#setOffersByType();
     return createEditPointTemplate(this._state, this.#headerView.element, this.#offersByType);
   }
 
@@ -129,10 +132,15 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement(point);
   }
 
+  #setOffersByType() {
+    this.#offersByType = mockOffers.find((offer) => offer.type === this._state.type);
+  }
+
   #setDatepicker() {
     const commonConfig = {
       dateFormat: FLATPICKR_DATE_FORMAT,
       enableTime: true,
+      minuteIncrement: 1,
       static: true,
       'time_24hr': true,
     };
@@ -155,6 +163,13 @@ export default class EditPointView extends AbstractStatefulView {
         onChange: this.#dateToChangeHandler,
       }
     );
+
+    if (!this._state.dateFrom) {
+      this.#dateFromPicker.clear(false);
+    }
+    if (!this._state.dateTo) {
+      this.#dateToPicker.clear(false);
+    }
   }
 
   #dateFromChangeHandler = ([dateFrom]) => {
@@ -236,8 +251,11 @@ export default class EditPointView extends AbstractStatefulView {
       offersElement.addEventListener('change', this.#changeOffersHandler);
     }
 
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#closeEditFormHandler);
+    if (this._state.id) {
+      this.element.querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#closeEditFormHandler);
+    }
+
     this.element.querySelector('.event__type-list')
       .addEventListener('change', this.#changeTypeHandler);
     this.element.querySelector('.event__input--destination')

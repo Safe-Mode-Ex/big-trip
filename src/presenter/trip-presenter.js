@@ -6,6 +6,7 @@ import ListSortView from '../view/list-sort-view';
 import ListView from '../view/list-view';
 import ListEmptyView from '../view/list-empty-view';
 import PointPresenter from './point-presenter';
+import AddPointPresenter from './add-point-presenter';
 
 export default class TripPresenter {
   #listComponent = new ListView();
@@ -13,6 +14,7 @@ export default class TripPresenter {
   #emptyListComponent = null;
 
   #pointsPresenters = new Map();
+  #addPointPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.ALL;
 
@@ -20,10 +22,16 @@ export default class TripPresenter {
   #pointsModel = null;
   #filterModel = null;
 
-  constructor({tripContainer, pointsModel, filterModel}) {
+  constructor({tripContainer, pointsModel, filterModel, onAddPointDestroy}) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+
+    this.#addPointPresenter = new AddPointPresenter({
+      pointListContainer: this.#listComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onAddPointDestroy,
+    });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -40,6 +48,12 @@ export default class TripPresenter {
     this.#renderTrip();
   }
 
+  createPoint() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
+    this.#addPointPresenter.init();
+  }
+
   #renderTrip() {
     this.#renderSort();
     render(this.#listComponent, this.#tripContainer);
@@ -53,6 +67,7 @@ export default class TripPresenter {
   }
 
   #clearTrip(resetSortType = false) {
+    this.#addPointPresenter.destroy();
     this.#pointsPresenters.forEach((presenter) => presenter.destroy());
     this.#pointsPresenters.clear();
 
@@ -99,6 +114,7 @@ export default class TripPresenter {
   }
 
   #handleModeChange = () => {
+    this.#addPointPresenter.destroy();
     this.#pointsPresenters.forEach((presenter) => presenter.resetView());
   };
 

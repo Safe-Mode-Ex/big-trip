@@ -30,7 +30,7 @@ function createEventTypeList() {
   `;
 }
 
-function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, basePrice}) {
+function createEditPointHeaderTemplate({id, type, destination, dateFrom, dateTo, basePrice}) {
   const eventType = type.toLowerCase();
   const eventDateFrom = dayjs(dateFrom).format(EVENT_DATE_FORMAT);
   const eventDateTo = dayjs(dateTo).format(EVENT_DATE_FORMAT);
@@ -60,7 +60,7 @@ function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, bas
           id="event-destination-1"
           type="text"
           name="event-destination"
-          value="${destination.name}"
+          value="${destination ? destination.name : ''}"
           list="destination-list-1"
         >
         <datalist id="destination-list-1">
@@ -103,11 +103,13 @@ function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, bas
       </div>
 
       <button class="event__save-btn btn btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__reset-btn" type="reset">${id ? 'Delete' : 'Reset'}</button>
 
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>
+      ${id ? (`
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
+      `) : ''}
     </header>
   `;
 }

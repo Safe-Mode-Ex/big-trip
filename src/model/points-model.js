@@ -34,20 +34,16 @@ export default class PointsModel extends Observable {
 
     this.#points = [
       ...this.points.slice(0, index),
-      update,
+      PointsModel.#getUpdatedPoint(update),
       ...this.points.slice(index + 1),
-    ].map((point) => ({
-      ...point,
-      destination: point.destination.id,
-      offers: point.offers.length ? point.offers.map(({id}) => id) : [],
-    }));
+    ];
 
     this._notify(updateType, update);
   }
 
   addPoint(updateType, update) {
     this.#points = [
-      update,
+      PointsModel.#getUpdatedPoint(update),
       ...this.#points,
     ];
 
@@ -67,5 +63,13 @@ export default class PointsModel extends Observable {
     ];
 
     this._notify(updateType, update);
+  }
+
+  static #getUpdatedPoint(point) {
+    return {
+      ...point,
+      destination: point.destination.id,
+      offers: point.offers.length ? point.offers.map(({id}) => id) : [],
+    };
   }
 }

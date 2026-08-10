@@ -1,4 +1,15 @@
 const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+
+const EMPTY_POINT = {
+  type: 'Flight',
+  basePrice: 0,
+  dateFrom: undefined,
+  dateTo: undefined,
+  destination: null,
+  isFavorite: false,
+  offers: [],
+};
+
 const FilterType = {
   ALL: 'everything',
   FUTURE: 'future',
@@ -39,6 +50,7 @@ const FLATPICKR_DATE_FORMAT = 'd/m/y H:i';
 
 export {
   TYPES,
+  EMPTY_POINT,
   FilterType,
   SortType,
   UserAction,
