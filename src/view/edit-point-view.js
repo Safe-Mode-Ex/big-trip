@@ -143,6 +143,7 @@ export default class EditPointView extends AbstractStatefulView {
       minuteIncrement: 1,
       static: true,
       'time_24hr': true,
+      allowInput: true,
     };
 
     this.#dateFromPicker = flatpickr(
@@ -163,13 +164,6 @@ export default class EditPointView extends AbstractStatefulView {
         onChange: this.#dateToChangeHandler,
       }
     );
-
-    if (!this._state.dateFrom) {
-      this.#dateFromPicker.clear(false);
-    }
-    if (!this._state.dateTo) {
-      this.#dateToPicker.clear(false);
-    }
   }
 
   #dateFromChangeHandler = ([dateFrom]) => {
@@ -215,6 +209,7 @@ export default class EditPointView extends AbstractStatefulView {
     const destination = mockDestinations.find(({name}) => name === evt.target.value);
 
     if (!destination) {
+      this.updateElement({destination: null});
       return;
     }
 
@@ -224,8 +219,10 @@ export default class EditPointView extends AbstractStatefulView {
   #changePriceHandler = (evt) => {
     evt.preventDefault();
 
+    const isValid = typeof evt.target.value === 'number' && evt.target.value >= 0;
+
     this.updateElement({
-      basePrice: evt.target.value,
+      basePrice: isValid ? evt.target.value : 0,
     });
   };
 

@@ -1,6 +1,5 @@
-import dayjs from 'dayjs';
 import AbstractView from '../framework/view/abstract-view';
-import { TYPES, EVENT_DATE_FORMAT } from '../const';
+import { TYPES } from '../const';
 import { mockDestinations } from '../mock/destination';
 
 function createEventTypeList() {
@@ -30,10 +29,8 @@ function createEventTypeList() {
   `;
 }
 
-function createEditPointHeaderTemplate({id, type, destination, dateFrom, dateTo, basePrice}) {
+function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
   const eventType = type.toLowerCase();
-  const eventDateFrom = dayjs(dateFrom).format(EVENT_DATE_FORMAT);
-  const eventDateTo = dayjs(dateTo).format(EVENT_DATE_FORMAT);
 
   return `
     <header class="event__header">
@@ -62,6 +59,7 @@ function createEditPointHeaderTemplate({id, type, destination, dateFrom, dateTo,
           name="event-destination"
           value="${destination ? destination.name : ''}"
           list="destination-list-1"
+          required
         >
         <datalist id="destination-list-1">
           ${mockDestinations.map(({name}) => `<option value="${name}"></option>`)}
@@ -75,7 +73,7 @@ function createEditPointHeaderTemplate({id, type, destination, dateFrom, dateTo,
           id="event-start-time-1"
           type="text"
           name="event-start-time"
-          value="${eventDateFrom}"
+          required
         >
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
@@ -84,7 +82,7 @@ function createEditPointHeaderTemplate({id, type, destination, dateFrom, dateTo,
           id="event-end-time-1"
           type="text"
           name="event-end-time"
-          value="${eventDateTo}"
+          required
         >
       </div>
 
@@ -99,6 +97,7 @@ function createEditPointHeaderTemplate({id, type, destination, dateFrom, dateTo,
           type="text"
           name="event-price"
           value="${basePrice}"
+          required
         >
       </div>
 

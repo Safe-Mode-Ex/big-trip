@@ -26,7 +26,6 @@ function createPointTemplate(point) {
   const timeTo = humanizePointTime(dateTo);
   const dateTimeFrom = getDateTime(dateFrom, true);
   const dateTimeTo = getDateTime(dateTo, true);
-
   const duration = getDurationString(dateFrom, dateTo);
 
   return `
