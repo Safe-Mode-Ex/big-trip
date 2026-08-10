@@ -1,24 +1,27 @@
-import { render } from './framework/render';
-import ListFilterView from './view/list-filter-view';
-import TripPresenter from './presenter/trip-presenter';
-import PointsModel from './model/points-model';
 import FilterModel from './model/filter-model';
-import { generateFilter } from './mock/filter';
+import PointsModel from './model/points-model';
+import FilterPresenter from './presenter/filter-presenter';
+import TripPresenter from './presenter/trip-presenter';
 
 const headerElement = document.querySelector('.page-header');
 const mainElement = document.querySelector('.page-main');
 
-const filtersElement = headerElement.querySelector('.trip-controls__filters');
-const eventsElement = mainElement.querySelector('.trip-events');
+const filterContainer = headerElement.querySelector('.trip-controls__filters');
+const tripContainer = mainElement.querySelector('.trip-events');
 
-const pointsModel = new PointsModel();
 const filterModel = new FilterModel();
-const eventsPresenter = new TripPresenter({
-  eventsContainer: eventsElement,
+const pointsModel = new PointsModel();
+
+const filterPresenter = new FilterPresenter({
+  filterContainer,
+  filterModel,
   pointsModel,
 });
 
-const filters = generateFilter(pointsModel.points);
-render(new ListFilterView({filters}), filtersElement);
+const tripPresenter = new TripPresenter({
+  tripContainer,
+  pointsModel,
+});
 
-eventsPresenter.init();
+filterPresenter.init();
+tripPresenter.init();

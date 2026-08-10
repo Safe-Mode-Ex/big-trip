@@ -14,11 +14,11 @@ export default class TripPresenter {
   #pointsPresenters = new Map();
   #currentSortType = SortType.DAY;
 
-  #eventsContainer = null;
+  #tripContainer = null;
   #pointsModel = null;
 
-  constructor({eventsContainer, pointsModel}) {
-    this.#eventsContainer = eventsContainer;
+  constructor({tripContainer, pointsModel}) {
+    this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -34,7 +34,7 @@ export default class TripPresenter {
 
   #renderTrip() {
     this.#renderSort();
-    render(this.#listComponent, this.#eventsContainer);
+    render(this.#listComponent, this.#tripContainer);
 
     if (!this.points.length) {
       this.#renderListEmpty();
@@ -57,7 +57,7 @@ export default class TripPresenter {
   }
 
   #renderListEmpty() {
-    render(new ListEmptyView(), this.#eventsContainer);
+    render(new ListEmptyView(), this.#tripContainer);
   }
 
   #renderPoints() {
@@ -80,7 +80,7 @@ export default class TripPresenter {
       currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange,
     });
-    render(this.#sortComponent, this.#eventsContainer);
+    render(this.#sortComponent, this.#tripContainer);
   }
 
   #handleModeChange = () => {
