@@ -1,3 +1,4 @@
+import he from 'he';
 import AbstractView from '../framework/view/abstract-view';
 import { getDateTime, getDurationString, humanizePointDateFrom, humanizePointTime } from '../utils/point';
 
@@ -50,7 +51,7 @@ function createPointTemplate(point) {
         <p class="event__duration">${duration}</p>
       </div>
       <p class="event__price">
-        &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+        &euro;&nbsp;<span class="event__price-value">${he.encode(basePrice)}</span>
       </p>
 
       ${offers.length ? createSelectedOffersTemplate(offers) : ''}

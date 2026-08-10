@@ -1,3 +1,4 @@
+import he from 'he';
 import AbstractView from '../framework/view/abstract-view';
 import { TYPES } from '../const';
 import { mockDestinations } from '../mock/destination';
@@ -57,7 +58,7 @@ function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
           id="event-destination-1"
           type="text"
           name="event-destination"
-          value="${destination ? destination.name : ''}"
+          value="${destination ? he.encode(destination.name) : ''}"
           list="destination-list-1"
           required
         >
@@ -96,7 +97,7 @@ function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
           id="event-price-1"
           type="text"
           name="event-price"
-          value="${basePrice}"
+          value="${he.encode(basePrice)}"
           required
         >
       </div>

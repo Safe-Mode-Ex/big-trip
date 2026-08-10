@@ -77,7 +77,7 @@ function createEditPointTemplate(point, headerElement, offersByType) {
   const {destination, offers} = point;
 
   return `
-    <form class="event event--edit" action="#" method="post">
+    <form class="event event--edit" action="#" method="post" id="edit">
       ${headerElement.outerHTML}
       ${createEditPointDetailsTemplate({offersByType, offers, destination})}
     </form>
