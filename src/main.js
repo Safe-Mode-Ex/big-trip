@@ -21,6 +21,7 @@ const filterPresenter = new FilterPresenter({
 const tripPresenter = new TripPresenter({
   tripContainer,
   pointsModel,
+  filterModel,
 });
 
 filterPresenter.init();

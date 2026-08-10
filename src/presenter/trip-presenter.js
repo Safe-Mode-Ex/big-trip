@@ -1,6 +1,7 @@
 import { remove, render } from '../framework/render';
 import { SortType, UpdateType, UserAction } from '../const';
 import { sort } from '../utils/sort';
+import { filter } from '../utils/filter';
 import ListSortView from '../view/list-sort-view';
 import ListView from '../view/list-view';
 import ListEmptyView from '../view/list-empty-view';
@@ -16,16 +17,22 @@ export default class TripPresenter {
 
   #tripContainer = null;
   #pointsModel = null;
+  #filterModel = null;
 
-  constructor({tripContainer, pointsModel}) {
+  constructor({tripContainer, pointsModel, filterModel}) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
+    this.#filterModel = filterModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
-    return sort[this.#currentSortType](this.#pointsModel.points);
+    const filterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[filterType](points);
+    return sort[this.#currentSortType](filteredPoints);
   }
 
   init() {
