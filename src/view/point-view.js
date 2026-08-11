@@ -51,7 +51,7 @@ function createPointTemplate(point) {
         <p class="event__duration">${duration}</p>
       </div>
       <p class="event__price">
-        &euro;&nbsp;<span class="event__price-value">${he.encode(basePrice)}</span>
+        &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
       </p>
 
       ${offers.length ? createSelectedOffersTemplate(offers) : ''}

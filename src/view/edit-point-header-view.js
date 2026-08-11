@@ -97,7 +97,7 @@ function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
           id="event-price-1"
           type="text"
           name="event-price"
-          value="${he.encode(basePrice)}"
+          value="${basePrice}"
           required
         >
       </div>
