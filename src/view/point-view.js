@@ -1,4 +1,3 @@
-import he from 'he';
 import AbstractView from '../framework/view/abstract-view';
 import { getDateTime, getDurationString, humanizePointDateFrom, humanizePointTime } from '../utils/point';
 
