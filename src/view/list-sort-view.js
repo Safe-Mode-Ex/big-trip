@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view';
-import { SortType } from '../const';
+import { generateSort } from '../mock/sort';
 
-function createListSortTemplate(sort) {
+function createListSortTemplate(sort, currentSortType) {
   return `
     <form class="trip-events__trip-sort trip-sort" action="#" method="get">
       ${sort.map(({type, disabled}) => (`
@@ -14,7 +14,7 @@ function createListSortTemplate(sort) {
             value="sort-${type}"
             data-sort-type="${type}"
             ${disabled ? 'disabled' : ''}
-            ${type === SortType.DAY ? 'checked' : ''}
+            ${type === currentSortType ? 'checked' : ''}
           >
           <label class="trip-sort__btn" for="sort-${type}">${type}</label>
         </div>
@@ -24,19 +24,20 @@ function createListSortTemplate(sort) {
 }
 
 export default class ListSortView extends AbstractView {
-  #sort = null;
+  #sort = generateSort();
+  #currentSortType = null;
   #handleSortTypeChange = null;
 
-  constructor({sort, onSortTypeChange}) {
+  constructor({currentSortType, onSortTypeChange}) {
     super();
 
-    this.#sort = sort;
+    this.#currentSortType = currentSortType;
     this.#handleSortTypeChange = onSortTypeChange;
     this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
 
   get template() {
-    return createListSortTemplate(this.#sort);
+    return createListSortTemplate(this.#sort, this.#currentSortType);
   }
 
   #sortTypeChangeHandler = (evt) => {

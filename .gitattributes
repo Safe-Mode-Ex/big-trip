@@ -6,3 +6,7 @@
 *.webp binary
 *.woff binary
 *.woff2 binary
+
+markup/** linguist-vendored
+public/** linguist-vendored
+dist/** linguist-vendored

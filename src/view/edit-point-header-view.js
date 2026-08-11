@@ -1,6 +1,6 @@
-import dayjs from 'dayjs';
+import he from 'he';
 import AbstractView from '../framework/view/abstract-view';
-import { TYPES, EVENT_DATE_FORMAT } from '../const';
+import { TYPES } from '../const';
 import { mockDestinations } from '../mock/destination';
 
 function createEventTypeList() {
@@ -30,10 +30,8 @@ function createEventTypeList() {
   `;
 }
 
-function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, basePrice}) {
+function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
   const eventType = type.toLowerCase();
-  const eventDateFrom = dayjs(dateFrom).format(EVENT_DATE_FORMAT);
-  const eventDateTo = dayjs(dateTo).format(EVENT_DATE_FORMAT);
 
   return `
     <header class="event__header">
@@ -60,8 +58,9 @@ function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, bas
           id="event-destination-1"
           type="text"
           name="event-destination"
-          value="${destination.name}"
+          value="${destination ? he.encode(destination.name) : ''}"
           list="destination-list-1"
+          required
         >
         <datalist id="destination-list-1">
           ${mockDestinations.map(({name}) => `<option value="${name}"></option>`)}
@@ -75,7 +74,7 @@ function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, bas
           id="event-start-time-1"
           type="text"
           name="event-start-time"
-          value="${eventDateFrom}"
+          required
         >
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
@@ -84,7 +83,7 @@ function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, bas
           id="event-end-time-1"
           type="text"
           name="event-end-time"
-          value="${eventDateTo}"
+          required
         >
       </div>
 
@@ -99,15 +98,18 @@ function createEditPointHeaderTemplate({type, destination, dateFrom, dateTo, bas
           type="text"
           name="event-price"
           value="${basePrice}"
+          required
         >
       </div>
 
       <button class="event__save-btn btn btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Cancel</button>
+      <button class="event__reset-btn" type="reset">${id ? 'Delete' : 'Reset'}</button>
 
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>
+      ${id ? (`
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
+      `) : ''}
     </header>
   `;
 }
