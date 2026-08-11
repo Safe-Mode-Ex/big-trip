@@ -6,9 +6,20 @@ import Observable from '../framework/observable';
 const POINTS_COUNT = 3;
 
 export default class PointsModel extends Observable {
+  #tripApiService = null;
   #destinations = mockDestinations;
   #offers = mockOffers;
   #points = Array.from({length: POINTS_COUNT}, getRandomPoint);
+
+  constructor({tripApiService}) {
+    super();
+
+    this.#tripApiService = tripApiService;
+
+    this.#tripApiService.points.then((points) => {
+      console.log(points);
+    });
+  }
 
   get points() {
     return this.#points.map((point) => {
