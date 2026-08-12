@@ -1,16 +1,17 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { mockOffers } from '../mock/offer';
 import { mockDestinations } from '../mock/destination';
 import { EMPTY_POINT, FLATPICKR_DATE_FORMAT } from '../const';
+import Store from '../store/store';
 import EditPointHeaderView from '../view/edit-point-header-view';
 
-const OFFER_ID_REGEXP = /-([^-]+)$/;
+const OFFER_ID_REGEXP = /^event-offer-(.+)$/;
 
 function createEditPointDetailsTemplate({offersByType, offers, destination}) {
   const allOffers = offersByType ? offersByType.offers.filter(({id}) => !offers.some((offer) => id === offer.id)) : [];
   const hasOffers = Boolean(offers.length || allOffers.length);
+  const hasDestinationDescription = destination && (destination.description || destination.pictures.length);
 
   return `
     <section class="event__details">
@@ -55,7 +56,7 @@ function createEditPointDetailsTemplate({offersByType, offers, destination}) {
         </section>
       `) : ''}
 
-      ${destination ? (`
+      ${hasDestinationDescription ? (`
         <section class="event__section event__section--destination">
           <h3 class="event__section-title event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${destination.description}</p>
@@ -133,7 +134,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #setOffersByType() {
-    this.#offersByType = mockOffers.find((offer) => offer.type === this._state.type);
+    this.#offersByType = Store.offers.find((offer) => offer.type === this._state.type);
   }
 
   #setDatepicker() {
@@ -219,16 +220,16 @@ export default class EditPointView extends AbstractStatefulView {
   #changePriceHandler = (evt) => {
     evt.preventDefault();
 
-    const isValid = typeof evt.target.value === 'number' && evt.target.value >= 0;
+    const price = Number(evt.target.value);
+    const isValid = typeof price === 'number' && evt.target.value >= 0;
 
     this.updateElement({
-      basePrice: isValid ? evt.target.value : 0,
+      basePrice: isValid ? price : 0,
     });
   };
 
   #changeOffersHandler = (evt) => {
     const offerId = evt.target.id.match(OFFER_ID_REGEXP)[1];
-
     const offers = evt.target.checked ?
       [...this._state.offers, this.#offersByType.offers.find(({id}) => id === offerId)] :
       this._state.offers.filter(({id}) => id !== offerId);

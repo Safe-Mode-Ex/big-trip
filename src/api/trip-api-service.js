@@ -7,11 +7,23 @@ const Method = {
 
 const ApiRoute = {
   POINTS: 'points',
+  DESTINATIONS: 'destinations',
+  OFFERS: 'offers',
 };
 
 export default class TripApiService extends ApiService {
   get points() {
     return this._load({url: ApiRoute.POINTS})
+      .then(ApiService.parseResponse);
+  }
+
+  get destinations() {
+    return this._load({url: ApiRoute.DESTINATIONS})
+      .then(ApiService.parseResponse);
+  }
+
+  get offers() {
+    return this._load({url: ApiRoute.OFFERS})
       .then(ApiService.parseResponse);
   }
 

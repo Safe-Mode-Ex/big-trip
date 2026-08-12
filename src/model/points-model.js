@@ -1,13 +1,12 @@
-import { mockOffers } from '../mock/offer';
-import { mockDestinations } from '../mock/destination';
 import Observable from '../framework/observable';
 import { UpdateType } from '../const';
+import Store from '../store/store.js';
 
 export default class PointsModel extends Observable {
   #tripApiService = null;
   #points = [];
-  #destinations = mockDestinations;
-  #offers = mockOffers;
+  #destinations = [];
+  #offers = [];
 
   constructor({tripApiService}) {
     super();
@@ -32,7 +31,15 @@ export default class PointsModel extends Observable {
   async init() {
     try {
       const points = await this.#tripApiService.points;
+      const destinations = await this.#tripApiService.destinations;
+      const offers = await this.#tripApiService.offers;
+
       this.#points = points.map(PointsModel.#adaptToClient);
+      this.#destinations = destinations;
+      this.#offers = offers;
+
+      Store.destinations = destinations;
+      Store.offers = offers;
     } catch (error) {
       this.#points = [];
     }
@@ -49,7 +56,7 @@ export default class PointsModel extends Observable {
 
     try {
       const response = await this.#tripApiService.updatePoint(PointsModel.#getUpdatedPoint(update));
-      const updatedPoint = this.#adaptToClient(response);
+      const updatedPoint = PointsModel.#adaptToClient(response);
 
       this.#points = [
         ...this.#points.slice(0, index),
@@ -59,7 +66,7 @@ export default class PointsModel extends Observable {
 
       this._notify(updateType, update);
     } catch (error) {
-      throw new Error('Can\'t update point');
+      throw new Error('Can not update point');
     }
   }
 
