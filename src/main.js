@@ -4,6 +4,8 @@ import PointsModel from './model/points-model';
 import AddPointButtonView from './view/add-point-button-view';
 import FilterPresenter from './presenter/filter-presenter';
 import TripPresenter from './presenter/trip-presenter';
+import TripApiService from './api/trip-api-service';
+import { AUTHORIZATION, END_POINT } from './config';
 
 const headerElement = document.querySelector('.page-header');
 const mainElement = document.querySelector('.page-main');
@@ -12,7 +14,9 @@ const filterContainer = headerElement.querySelector('.trip-controls__filters');
 const tripContainer = mainElement.querySelector('.trip-events');
 
 const filterModel = new FilterModel();
-const pointsModel = new PointsModel();
+const pointsModel = new PointsModel({
+  tripApiService: new TripApiService(END_POINT, AUTHORIZATION),
+});
 
 const filterPresenter = new FilterPresenter({
   filterContainer,
@@ -40,7 +44,10 @@ function handleAddPointButtonClick() {
   addPointButtonComponent.element.disabled = true;
 }
 
-render(addPointButtonComponent, headerElement.querySelector('.trip-main'));
-
 filterPresenter.init();
 tripPresenter.init();
+pointsModel
+  .init()
+  .finally(() => {
+    render(addPointButtonComponent, headerElement.querySelector('.trip-main'));
+  });
