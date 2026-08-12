@@ -5,10 +5,12 @@ import { filter } from '../utils/filter';
 import ListSortView from '../view/list-sort-view';
 import ListView from '../view/list-view';
 import ListEmptyView from '../view/list-empty-view';
+import LoadingView from '../view/loading-view';
 import PointPresenter from './point-presenter';
 import AddPointPresenter from './add-point-presenter';
 
 export default class TripPresenter {
+  #loadingComponent = new LoadingView();
   #listComponent = new ListView();
   #sortComponent = null;
   #emptyListComponent = null;
@@ -17,6 +19,7 @@ export default class TripPresenter {
   #addPointPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.ALL;
+  #isLoading = true;
 
   #tripContainer = null;
   #pointsModel = null;
@@ -55,14 +58,18 @@ export default class TripPresenter {
   }
 
   #renderTrip() {
-    this.#renderSort();
-    render(this.#listComponent, this.#tripContainer);
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     if (!this.points.length) {
       this.#renderListEmpty();
       return;
     }
 
+    this.#renderSort();
+    render(this.#listComponent, this.#tripContainer);
     this.#renderPoints();
   }
 
@@ -72,6 +79,7 @@ export default class TripPresenter {
     this.#pointsPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
@@ -113,6 +121,10 @@ export default class TripPresenter {
     render(this.#sortComponent, this.#tripContainer);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#tripContainer);
+  }
+
   #handleModeChange = () => {
     this.#addPointPresenter.destroy();
     this.#pointsPresenters.forEach((presenter) => presenter.resetView());
@@ -143,6 +155,11 @@ export default class TripPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearTrip({resetSortType: true});
+        this.#renderTrip();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderTrip();
         break;
     }

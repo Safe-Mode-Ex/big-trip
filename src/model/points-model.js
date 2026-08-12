@@ -1,24 +1,17 @@
-import { getRandomPoint } from '../mock/point';
 import { mockOffers } from '../mock/offer';
 import { mockDestinations } from '../mock/destination';
 import Observable from '../framework/observable';
-
-const POINTS_COUNT = 3;
+import { UpdateType } from '../const';
 
 export default class PointsModel extends Observable {
   #tripApiService = null;
+  #points = [];
   #destinations = mockDestinations;
   #offers = mockOffers;
-  #points = Array.from({length: POINTS_COUNT}, getRandomPoint);
 
   constructor({tripApiService}) {
     super();
-
     this.#tripApiService = tripApiService;
-
-    this.#tripApiService.points.then((points) => {
-      console.log(points);
-    });
   }
 
   get points() {
@@ -28,12 +21,23 @@ export default class PointsModel extends Observable {
 
       return {
         ...point,
-        destination: this.#destinations.find(({id}) => id === point.destination),
+        destination: this.#destinations.find(({id}) => id === point.destination) ?? '',
         offers: hasOffers ?
           pointOffers.offers.filter(({id}) => point.offers.some((offerId) => offerId === id)) :
           [],
       };
     });
+  }
+
+  async init() {
+    try {
+      const points = await this.#tripApiService.points;
+      this.#points = points.map(PointsModel.#adaptToClient);
+    } catch (error) {
+      this.#points = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   updatePoint(updateType, update) {
@@ -76,7 +80,15 @@ export default class PointsModel extends Observable {
     this._notify(updateType, update);
   }
 
-  #adaptToClient(point) {
+  static #getUpdatedPoint(point) {
+    return {
+      ...point,
+      destination: point.destination.id,
+      offers: point.offers.length ? point.offers.map(({id}) => id) : [],
+    };
+  }
+
+  static #adaptToClient(point) {
     const adaptedPoint = {
       ...point,
       basePrice: point.base_price,
@@ -91,13 +103,5 @@ export default class PointsModel extends Observable {
     delete adaptedPoint.is_favorite;
 
     return adaptedPoint;
-  }
-
-  static #getUpdatedPoint(point) {
-    return {
-      ...point,
-      destination: point.destination.id,
-      offers: point.offers.length ? point.offers.map(({id}) => id) : [],
-    };
   }
 }

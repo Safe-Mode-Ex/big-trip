@@ -47,3 +47,4 @@ render(addPointButtonComponent, headerElement.querySelector('.trip-main'));
 
 filterPresenter.init();
 tripPresenter.init();
+pointsModel.init();
