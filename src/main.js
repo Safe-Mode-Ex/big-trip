@@ -43,8 +43,10 @@ function handleAddPointButtonClick() {
   addPointButtonComponent.element.disabled = true;
 }
 
-render(addPointButtonComponent, headerElement.querySelector('.trip-main'));
-
 filterPresenter.init();
 tripPresenter.init();
-pointsModel.init();
+pointsModel
+  .init()
+  .finally(() => {
+    render(addPointButtonComponent, headerElement.querySelector('.trip-main'));
+  });
