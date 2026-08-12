@@ -5,6 +5,7 @@ import AddPointButtonView from './view/add-point-button-view';
 import FilterPresenter from './presenter/filter-presenter';
 import TripPresenter from './presenter/trip-presenter';
 import TripApiService from './api/trip-api-service';
+import { AUTHORIZATION, END_POINT } from './config';
 
 const headerElement = document.querySelector('.page-header');
 const mainElement = document.querySelector('.page-main');
@@ -14,7 +15,7 @@ const tripContainer = mainElement.querySelector('.trip-events');
 
 const filterModel = new FilterModel();
 const pointsModel = new PointsModel({
-  tripApiService: new TripApiService(process.env.END_POINT, process.env.AUTHORIZATION),
+  tripApiService: new TripApiService(END_POINT, AUTHORIZATION),
 });
 
 const filterPresenter = new FilterPresenter({
