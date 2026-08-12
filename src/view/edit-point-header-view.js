@@ -30,8 +30,17 @@ function createEventTypeList(id) {
   `;
 }
 
-function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
+function createEditPointHeaderTemplate({
+  id,
+  type,
+  destination,
+  basePrice,
+  isSaving,
+  isDeleting,
+  isDisabled,
+}) {
   const eventType = type.toLowerCase();
+  const deleteButtonText = isDeleting ? 'Deleting' : 'Delete';
 
   return `
     <header class="event__header">
@@ -50,6 +59,7 @@ function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
           class="event__type-toggle visually-hidden"
           id="event-type-toggle-${id}"
           type="checkbox"
+          ${isDisabled ? 'disabled' : ''}
         >
 
         ${createEventTypeList(id)}
@@ -68,6 +78,7 @@ function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
           value="${destination ? he.encode(destination.name) : ''}"
           list="destination-list-${id}"
           required
+          ${isDisabled ? 'disabled' : ''}
         >
         <datalist id="destination-list-${id}">
           ${Store.destinations.map(({name}) => `<option value="${name}"></option>`)}
@@ -82,6 +93,7 @@ function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
           type="text"
           name="event-start-time"
           required
+          ${isDisabled ? 'disabled' : ''}
         >
         &mdash;
         <label class="visually-hidden" for="event-end-time-${id}">To</label>
@@ -91,6 +103,7 @@ function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
           type="text"
           name="event-end-time"
           required
+          ${isDisabled ? 'disabled' : ''}
         >
       </div>
 
@@ -106,14 +119,31 @@ function createEditPointHeaderTemplate({id, type, destination, basePrice}) {
           name="event-price"
           value="${basePrice}"
           required
+          ${isDisabled ? 'disabled' : ''}
         >
       </div>
 
-      <button class="event__save-btn btn btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">${id ? 'Delete' : 'Reset'}</button>
+      <button
+        class="event__save-btn btn btn--blue"
+        type="submit"
+        ${isDisabled ? 'disabled' : ''}
+      >
+        ${isSaving ? 'Saving' : 'Save'}
+      </button>
+      <button
+        class="event__reset-btn"
+        type="reset"
+        ${isDisabled ? 'disabled' : ''}
+      >
+        ${id ? deleteButtonText : 'Reset'}
+      </button>
 
       ${id ? (`
-        <button class="event__rollup-btn" type="button">
+        <button
+          class="event__rollup-btn"
+          type="button"
+          ${isDisabled ? 'disabled' : ''}
+        >
           <span class="visually-hidden">Open event</span>
         </button>
       `) : ''}

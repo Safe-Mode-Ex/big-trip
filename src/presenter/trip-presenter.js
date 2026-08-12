@@ -1,4 +1,5 @@
 import { remove, render } from '../framework/render';
+import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { FilterType, SortType, UpdateType, UserAction } from '../const';
 import { sort } from '../utils/sort';
 import { filter } from '../utils/filter';
@@ -8,6 +9,11 @@ import ListEmptyView from '../view/list-empty-view';
 import LoadingView from '../view/loading-view';
 import PointPresenter from './point-presenter';
 import AddPointPresenter from './add-point-presenter';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class TripPresenter {
   #loadingComponent = new LoadingView();
@@ -24,6 +30,11 @@ export default class TripPresenter {
   #tripContainer = null;
   #pointsModel = null;
   #filterModel = null;
+
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor({tripContainer, pointsModel, filterModel, onAddPointDestroy}) {
     this.#tripContainer = tripContainer;
@@ -130,18 +141,43 @@ export default class TripPresenter {
     this.#pointsPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointsPresenters.get(update.id).setSaving();
+
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch (error) {
+          this.#pointsPresenters.get(update.id).setAborting();
+        }
+
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#addPointPresenter.setSaving();
+
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch (error) {
+          this.#addPointPresenter.setAborting();
+        }
+
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointsPresenters.get(update.id).setDeleting();
+
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch (error) {
+          this.#pointsPresenters.get(update.id).setAborting();
+        }
+
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
