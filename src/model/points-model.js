@@ -40,20 +40,27 @@ export default class PointsModel extends Observable {
     this._notify(UpdateType.INIT);
   }
 
-  updatePoint(updateType, update) {
+  async updatePoint(updateType, update) {
     const index = this.#points.findIndex(({id}) => id === update.id);
 
     if (index === -1) {
       throw new Error('Can not update unexisting point');
     }
 
-    this.#points = [
-      ...this.#points.slice(0, index),
-      PointsModel.#getUpdatedPoint(update),
-      ...this.#points.slice(index + 1),
-    ];
+    try {
+      const response = await this.#tripApiService.updatePoint(PointsModel.#getUpdatedPoint(update));
+      const updatedPoint = this.#adaptToClient(response);
 
-    this._notify(updateType, update);
+      this.#points = [
+        ...this.#points.slice(0, index),
+        updatedPoint,
+        ...this.#points.slice(index + 1),
+      ];
+
+      this._notify(updateType, update);
+    } catch (error) {
+      throw new Error('Can\'t update point');
+    }
   }
 
   addPoint(updateType, update) {
