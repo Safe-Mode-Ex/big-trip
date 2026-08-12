@@ -8,10 +8,18 @@ import EditPointHeaderView from '../view/edit-point-header-view';
 const OFFER_ID_REGEXP = /^event-offer-(.+)$/;
 const MIN_POINT_PRICE = 1;
 
-function createEditPointDetailsTemplate({offersByType, offers, destination}) {
-  const allOffers = offersByType ? offersByType.offers.filter(({id}) => !offers.some((offer) => id === offer.id)) : [];
+function createEditPointDetailsTemplate({
+  offersByType,
+  offers,
+  destination,
+  isDisabled,
+}) {
+  const allOffers = offersByType ?
+    offersByType.offers.filter(({id}) => !offers.some((offer) => id === offer.id)) :
+    [];
   const hasOffers = Boolean(offers.length || allOffers.length);
-  const hasDestinationDescription = destination && (destination.description || destination.pictures.length);
+  const hasDestinationDescription = destination &&
+    (destination.description || destination.pictures.length);
 
   return `
     <section class="event__details">
@@ -28,6 +36,7 @@ function createEditPointDetailsTemplate({offersByType, offers, destination}) {
                     type="checkbox"
                     name="event-offer[]"
                     checked
+                    ${isDisabled ? 'disabled' : ''}
                   >
                   <label class="event__offer-label" for="event-offer-${id}">
                   <span class="event__offer-title">${title}</span>
@@ -44,6 +53,7 @@ function createEditPointDetailsTemplate({offersByType, offers, destination}) {
                   id="event-offer-${id}"
                   type="checkbox"
                   name="event-offer-${id}"
+                  ${isDisabled ? 'disabled' : ''}
                 >
                 <label class="event__offer-label" for="event-offer-${id}">
                   <span class="event__offer-title">${title}</span>
@@ -75,12 +85,12 @@ function createEditPointDetailsTemplate({offersByType, offers, destination}) {
 }
 
 function createEditPointTemplate(point, headerElement, offersByType) {
-  const {destination, offers} = point;
+  const {destination, offers, isDisabled} = point;
 
   return `
     <form class="event event--edit" action="#" method="post" id="edit">
       ${headerElement.outerHTML}
-      ${createEditPointDetailsTemplate({offersByType, offers, destination})}
+      ${createEditPointDetailsTemplate({offersByType, offers, destination, isDisabled})}
     </form>
   `;
 }
@@ -99,7 +109,7 @@ export default class EditPointView extends AbstractStatefulView {
   constructor({point = EMPTY_POINT, onFormSubmit, onDeleteClick, onClose}) {
     super();
 
-    this._setState(point);
+    this._setState(EditPointView.#parsePointToState(point));
     this.#setOffersByType();
 
     this.#handleFormSubmit = onFormSubmit;
@@ -130,7 +140,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   reset(point) {
-    this.updateElement(point);
+    this.updateElement(EditPointView.#parsePointToState(point));
   }
 
   #setOffersByType() {
@@ -190,12 +200,12 @@ export default class EditPointView extends AbstractStatefulView {
       return;
     }
 
-    this.#handleFormSubmit(this._state);
+    this.#handleFormSubmit(EditPointView.#parseStateToPoint(this._state));
   };
 
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleDeleteClick(this._state);
+    this.#handleDeleteClick(EditPointView.#parseStateToPoint(this._state));
   };
 
   #changeTypeHandler = (evt) => {
@@ -291,4 +301,23 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.#setDatepicker();
   };
+
+  static #parsePointToState(point) {
+    return {
+      ...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+  }
+
+  static #parseStateToPoint(state) {
+    const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
+    return point;
+  }
 }
