@@ -70,28 +70,41 @@ export default class PointsModel extends Observable {
     }
   }
 
-  addPoint(updateType, update) {
-    this.#points = [
-      PointsModel.#getUpdatedPoint(update),
-      ...this.#points,
-    ];
+  async addPoint(updateType, update) {
+    try {
+      const response = await this.#tripApiService.addPoint(PointsModel.#getUpdatedPoint(update));
+      const newPoint = PointsModel.#adaptToClient(response);
 
-    this._notify(updateType, update);
+      this.#points = [
+        newPoint,
+        ...this.#points,
+      ];
+
+      this._notify(updateType, update);
+    } catch (error) {
+      throw new Error('Can not add point');
+    }
   }
 
-  deletePoint(updateType, update) {
+  async deletePoint(updateType, update) {
     const index = this.#points.findIndex(({id}) => id === update.id);
 
     if (index === -1) {
       throw new Error('Can not delete unexisting point');
     }
 
-    this.#points = [
-      ...this.#points.slice(0, index),
-      ...this.#points.slice(index + 1),
-    ];
+    try {
+      await this.#tripApiService.deletePoint(update.id);
 
-    this._notify(updateType, update);
+      this.#points = [
+        ...this.#points.slice(0, index),
+        ...this.#points.slice(index + 1),
+      ];
+
+      this._notify(updateType);
+    } catch (error) {
+      throw new Error('Can not delete point');
+    }
   }
 
   static #getUpdatedPoint(point) {

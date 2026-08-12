@@ -11,7 +11,7 @@ const TYPES = [
 ];
 
 const EMPTY_POINT = {
-  type: 'Flight',
+  type: 'flight',
   basePrice: 0,
   dateFrom: undefined,
   dateTo: undefined,

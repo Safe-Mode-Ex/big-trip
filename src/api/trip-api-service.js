@@ -3,6 +3,8 @@ import ApiService from '../framework/api-service.js';
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 const ApiRoute = {
@@ -38,6 +40,28 @@ export default class TripApiService extends ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  }
+
+  async addPoint(point) {
+    const response = await this._load({
+      url: ApiRoute.POINTS,
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+  async deletePoint(pointId) {
+    const response = await this._load({
+      url: `${ApiRoute.POINTS}/${pointId}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   }
 
   #adaptToServer(point) {

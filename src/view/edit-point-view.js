@@ -1,12 +1,12 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { mockDestinations } from '../mock/destination';
 import { EMPTY_POINT, FLATPICKR_DATE_FORMAT } from '../const';
 import Store from '../store/store';
 import EditPointHeaderView from '../view/edit-point-header-view';
 
 const OFFER_ID_REGEXP = /^event-offer-(.+)$/;
+const MIN_POINT_PRICE = 1;
 
 function createEditPointDetailsTemplate({offersByType, offers, destination}) {
   const allOffers = offersByType ? offersByType.offers.filter(({id}) => !offers.some((offer) => id === offer.id)) : [];
@@ -184,6 +184,12 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    if (!this._state.basePrice) {
+      this.element.elements['event-price'].value = '';
+      return;
+    }
+
     this.#handleFormSubmit(this._state);
   };
 
@@ -207,7 +213,7 @@ export default class EditPointView extends AbstractStatefulView {
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
 
-    const destination = mockDestinations.find(({name}) => name === evt.target.value);
+    const destination = Store.destinations.find(({name}) => name === evt.target.value);
 
     if (!destination) {
       this.updateElement({destination: null});
@@ -217,14 +223,31 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement({destination});
   };
 
-  #changePriceHandler = (evt) => {
+  #inputPriceHandler = (evt) => {
     evt.preventDefault();
 
     const price = Number(evt.target.value);
-    const isValid = typeof price === 'number' && evt.target.value >= 0;
+
+    if (price || price === 0) {
+      return;
+    }
+
+    evt.target.value = this._state.basePrice;
+  };
+
+  #changePriceHandler = (evt) => {
+    evt.preventDefault();
+
+    const basePrice = Number(evt.target.value);
+    const isValid = basePrice >= MIN_POINT_PRICE;
+
+    if (!isValid) {
+      evt.target.value = this._state.basePrice;
+      return;
+    }
 
     this.updateElement({
-      basePrice: isValid ? price : 0,
+      basePrice,
     });
   };
 
@@ -258,6 +281,8 @@ export default class EditPointView extends AbstractStatefulView {
       .addEventListener('change', this.#changeTypeHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('.event__input--price')
+      .addEventListener('input', this.#inputPriceHandler);
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#changePriceHandler);
 
