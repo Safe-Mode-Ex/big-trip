@@ -1,16 +1,24 @@
+import dayjs from 'dayjs';
 import AbstractView from '../framework/view/abstract-view';
 
-function createTripInfoTemplate(tripRoute) {
+const END_DATE_FORMAT = 'DD MMM';
+const RU_LOCALE = 'ru-RU';
+
+function createTripInfoTemplate(tripRoute, tripDuration, tripCost) {
+  const formattedCost = new Intl.NumberFormat(RU_LOCALE, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(tripCost);
+
   return `
     <section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
         <h1 class="trip-info__title">${tripRoute}</h1>
-
-        <p class="trip-info__dates">18&nbsp;&mdash;&nbsp;20 Mar</p>
+        <p class="trip-info__dates">${tripDuration}</p>
       </div>
 
       <p class="trip-info__cost">
-        Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
+        Total: &euro;&nbsp;<span class="trip-info__cost-value">${formattedCost}</span>
       </p>
     </section>
   `;
@@ -18,23 +26,47 @@ function createTripInfoTemplate(tripRoute) {
 
 export default class TripInfoView extends AbstractView {
   #tripRoute = '';
+  #tripDuration = '';
+  #tripCost = 0;
 
   constructor({points}) {
     super();
 
-    this.#setRoute(points);
+    this.#setTripRoute(points);
+    this.#setTripDuration(points);
+    this.#setTripCost(points);
   }
 
   get template() {
-    return createTripInfoTemplate(this.#tripRoute);
+    return createTripInfoTemplate(
+      this.#tripRoute,
+      this.#tripDuration,
+      this.#tripCost,
+    );
   }
 
-  #setRoute(points) {
+  #setTripRoute(points) {
     const {name: firstDestination} = points[0].destination;
     const {name: lastDestination} = points[points.length - 1].destination;
 
     this.#tripRoute = points.length > 3 ?
       `${firstDestination} – ... – ${lastDestination}` :
-      points.join(' – ');
+      points
+        .map(({destination}) => destination.name)
+        .filter((name, index, names) => !index || name !== names[index - 1])
+        .join(' – ');
+  }
+
+  #setTripDuration(points) {
+    const {dateFrom} = points[0];
+    const {dateTo} = points[points.length - 1];
+
+    this.#tripDuration = `${dayjs(dateFrom).date()} - ${dayjs(dateTo).format(END_DATE_FORMAT)}`;
+  }
+
+  #setTripCost(points) {
+    this.#tripCost = points.reduce((result, {basePrice, offers}) =>
+      result + basePrice + offers.reduce((offersPrice, {price}) => offersPrice + price, 0),
+    0);
   }
 }
