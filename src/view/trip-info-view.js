@@ -1,10 +1,10 @@
 import AbstractView from '../framework/view/abstract-view';
 
-function createTripInfoTemplate(points) {
+function createTripInfoTemplate(tripRoute) {
   return `
     <section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
+        <h1 class="trip-info__title">${tripRoute}</h1>
 
         <p class="trip-info__dates">18&nbsp;&mdash;&nbsp;20 Mar</p>
       </div>
@@ -17,14 +17,24 @@ function createTripInfoTemplate(points) {
 }
 
 export default class TripInfoView extends AbstractView {
-  #points = [];
+  #tripRoute = '';
 
   constructor({points}) {
     super();
-    this.#points = points;
+
+    this.#setRoute(points);
   }
 
   get template() {
-    return createTripInfoTemplate(this.#points);
+    return createTripInfoTemplate(this.#tripRoute);
+  }
+
+  #setRoute(points) {
+    const {name: firstDestination} = points[0].destination;
+    const {name: lastDestination} = points[points.length - 1].destination;
+
+    this.#tripRoute = points.length > 3 ?
+      `${firstDestination} – ... – ${lastDestination}` :
+      points.join(' – ');
   }
 }

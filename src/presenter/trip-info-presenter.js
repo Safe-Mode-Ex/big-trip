@@ -1,4 +1,6 @@
-import { render, RenderPosition } from '../framework/render';
+import { remove, render, RenderPosition } from '../framework/render';
+import { SortType } from '../const';
+import { sort } from '../utils/sort';
 import TripInfoView from '../view/trip-info-view';
 
 export default class TripInfoPresenter {
@@ -6,20 +8,28 @@ export default class TripInfoPresenter {
   #pointsModel = null;
   #tripInfoComponent = null;
 
+  #path = '';
+
   constructor({tripInfoContainer, pointsModel}) {
     this.#tripInfoContainer = tripInfoContainer;
     this.#pointsModel = pointsModel;
-
-    this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
-    this.#tripInfoComponent = new TripInfoView({
-      points: this.#pointsModel.points,
-    });
+    this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
   #handleModelEvent = () => {
+    const prevTripInfoComponent = this.#tripInfoComponent;
+
+    this.#tripInfoComponent = new TripInfoView({
+      points: sort[SortType.DAY](this.#pointsModel.points, true),
+    });
+
+    if (prevTripInfoComponent) {
+      remove(prevTripInfoComponent);
+    }
+
     render(this.#tripInfoComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
   };
 }
