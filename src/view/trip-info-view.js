@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 
-function createTripInfoTemplate() {
+function createTripInfoTemplate(points) {
   return `
     <section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
@@ -17,7 +17,14 @@ function createTripInfoTemplate() {
 }
 
 export default class TripInfoView extends AbstractView {
+  #points = [];
+
+  constructor({points}) {
+    super();
+    this.#points = points;
+  }
+
   get template() {
-    return createTripInfoTemplate();
+    return createTripInfoTemplate(this.#points);
   }
 }
