@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view';
 import { generateSort } from '../mock/sort';
 
-function createListSortTemplate(sort, currentSortType) {
+function createSortTemplate(sort, currentSortType) {
   return `
     <form class="trip-events__trip-sort trip-sort" action="#" method="get">
       ${sort.map(({type, disabled}) => (`
@@ -23,7 +23,7 @@ function createListSortTemplate(sort, currentSortType) {
   `;
 }
 
-export default class ListSortView extends AbstractView {
+export default class SortView extends AbstractView {
   #sort = generateSort();
   #currentSortType = null;
   #handleSortTypeChange = null;
@@ -37,7 +37,7 @@ export default class ListSortView extends AbstractView {
   }
 
   get template() {
-    return createListSortTemplate(this.#sort, this.#currentSortType);
+    return createSortTemplate(this.#sort, this.#currentSortType);
   }
 
   #sortTypeChangeHandler = (evt) => {

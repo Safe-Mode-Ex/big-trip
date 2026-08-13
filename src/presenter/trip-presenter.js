@@ -3,7 +3,7 @@ import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { FilterType, SortType, UpdateType, UserAction } from '../const';
 import { sort } from '../utils/sort';
 import { filter } from '../utils/filter';
-import ListSortView from '../view/list-sort-view';
+import SortView from '../view/sort-view';
 import ListView from '../view/list-view';
 import ListEmptyView from '../view/list-empty-view';
 import LoadingView from '../view/loading-view';
@@ -125,7 +125,7 @@ export default class TripPresenter {
   }
 
   #renderSort() {
-    this.#sortComponent = new ListSortView({
+    this.#sortComponent = new SortView({
       currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange,
     });
