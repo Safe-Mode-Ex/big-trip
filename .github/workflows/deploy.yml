@@ -31,13 +31,10 @@ jobs:
         with:
           node-version: "18.x"
 
-      - name: Create .env
-        run: |
-          cat > .env << EOF
-          AUTHORIZATION=${{ secrets.AUTHORIZATION }}
-          EOF
-
       - name: Build
+        env:
+          AUTHORIZATION: ${{ secrets.AUTHORIZATION }}
+          END_POINT: ${{ vars.END_POINT }}
         run: |
           npm install
           npm run build --if-present
