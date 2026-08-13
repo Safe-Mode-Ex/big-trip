@@ -1,6 +1,6 @@
 import he from 'he';
 import AbstractView from '../framework/view/abstract-view';
-import { TYPES } from '../const';
+import { MIN_POINT_PRICE, TYPES } from '../const';
 import Store from '../store/store';
 
 function createEventTypeList(id) {
@@ -115,7 +115,8 @@ function createEditPointHeaderTemplate({
         <input
           class="event__input event__input--price"
           id="event-price-${id}"
-          type="text"
+          type="number"
+          min="${MIN_POINT_PRICE}"
           name="event-price"
           value="${basePrice}"
           required

@@ -11,13 +11,18 @@ import PointPresenter from './point-presenter';
 import AddPointPresenter from './add-point-presenter';
 
 const TimeLimit = {
-  LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
+  LOWER: 350,
+  UPPER: 1000,
+};
+
+const LoadingMessage = {
+  ERROR: 'Failed to load latest route information',
+  LOADING: 'Loading...',
 };
 
 export default class TripPresenter {
-  #loadingComponent = new LoadingView();
   #listComponent = new ListView();
+  #loadingComponent = null;
   #sortComponent = null;
   #emptyListComponent = null;
 
@@ -26,14 +31,15 @@ export default class TripPresenter {
   #currentSortType = SortType.DAY;
   #filterType = FilterType.ALL;
   #isLoading = true;
+  #isError = false;
 
   #tripContainer = null;
   #pointsModel = null;
   #filterModel = null;
 
   #uiBlocker = new UiBlocker({
-    lowerLimit: TimeLimit.LOWER_LIMIT,
-    upperLimit: TimeLimit.UPPER_LIMIT
+    lowerLimit: TimeLimit.LOWER,
+    upperLimit: TimeLimit.UPPER,
   });
 
   constructor({tripContainer, pointsModel, filterModel, onAddPointDestroy}) {
@@ -69,7 +75,7 @@ export default class TripPresenter {
   }
 
   #renderTrip() {
-    if (this.#isLoading) {
+    if (this.#isLoading || this.#isError) {
       this.#renderLoading();
       return;
     }
@@ -133,6 +139,9 @@ export default class TripPresenter {
   }
 
   #renderLoading() {
+    this.#loadingComponent = new LoadingView({
+      message: this.#isError ? LoadingMessage.ERROR : LoadingMessage.LOADING,
+    });
     render(this.#loadingComponent, this.#tripContainer);
   }
 
@@ -196,6 +205,11 @@ export default class TripPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+
+        if (data.isError) {
+          this.#isError = true;
+        }
+
         this.#renderTrip();
         break;
     }

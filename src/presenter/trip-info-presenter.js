@@ -8,8 +8,6 @@ export default class TripInfoPresenter {
   #pointsModel = null;
   #tripInfoComponent = null;
 
-  #path = '';
-
   constructor({tripInfoContainer, pointsModel}) {
     this.#tripInfoContainer = tripInfoContainer;
     this.#pointsModel = pointsModel;

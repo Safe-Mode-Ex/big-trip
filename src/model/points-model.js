@@ -29,6 +29,8 @@ export default class PointsModel extends Observable {
   }
 
   async init() {
+    let isError = false;
+
     try {
       const points = await this.#tripApiService.points;
       const destinations = await this.#tripApiService.destinations;
@@ -42,9 +44,12 @@ export default class PointsModel extends Observable {
       Store.offers = offers;
     } catch (error) {
       this.#points = [];
+      this.#destinations = [];
+      this.#offers = [];
+      isError = true;
     }
 
-    this._notify(UpdateType.INIT);
+    this._notify(UpdateType.INIT, {isError});
   }
 
   async updatePoint(updateType, update) {
