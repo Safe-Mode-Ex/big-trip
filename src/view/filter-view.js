@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 
-function createListFilterTemplate(filters, currentFilterType) {
+function createFilterTemplate(filters, currentFilterType) {
   return `
     <form class="trip-filters" action="#" method="get">
       ${filters.map(({type, count}) => (`
@@ -24,7 +24,7 @@ function createListFilterTemplate(filters, currentFilterType) {
   `;
 }
 
-export default class ListFilterView extends AbstractView {
+export default class FilterView extends AbstractView {
   #filters = null;
   #currentFilter = null;
 
@@ -41,7 +41,7 @@ export default class ListFilterView extends AbstractView {
   }
 
   get template() {
-    return createListFilterTemplate(this.#filters, this.#currentFilter);
+    return createFilterTemplate(this.#filters, this.#currentFilter);
   }
 
   #filterTypeChangeHandler = (evt) => {

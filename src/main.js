@@ -1,17 +1,19 @@
-import { render } from './framework/render';
+import { render, RenderPosition } from './framework/render';
+import { AUTHORIZATION, END_POINT } from './config';
 import FilterModel from './model/filter-model';
 import PointsModel from './model/points-model';
+import TripInfoView from './view/trip-info-view';
 import AddPointButtonView from './view/add-point-button-view';
 import FilterPresenter from './presenter/filter-presenter';
 import TripPresenter from './presenter/trip-presenter';
 import TripApiService from './api/trip-api-service';
-import { AUTHORIZATION, END_POINT } from './config';
 
 const headerElement = document.querySelector('.page-header');
 const mainElement = document.querySelector('.page-main');
 
 const filterContainer = headerElement.querySelector('.trip-controls__filters');
 const tripContainer = mainElement.querySelector('.trip-events');
+const tripMainContainer = headerElement.querySelector('.trip-main');
 
 const filterModel = new FilterModel();
 const pointsModel = new PointsModel({
@@ -31,6 +33,8 @@ const tripPresenter = new TripPresenter({
   onAddPointDestroy: handleAddPointFormClose,
 });
 
+const tripInfoComponent = new TripInfoView();
+
 const addPointButtonComponent = new AddPointButtonView({
   onClick: handleAddPointButtonClick,
 });
@@ -49,5 +53,6 @@ tripPresenter.init();
 pointsModel
   .init()
   .finally(() => {
-    render(addPointButtonComponent, headerElement.querySelector('.trip-main'));
+    render(tripInfoComponent, tripMainContainer, RenderPosition.AFTERBEGIN);
+    render(addPointButtonComponent, tripMainContainer);
   });
