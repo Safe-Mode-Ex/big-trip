@@ -18,6 +18,14 @@ export default class TripInfoPresenter {
   }
 
   #handleModelEvent = () => {
+    this.#renderTripInfo();
+  };
+
+  #renderTripInfo() {
+    if (!this.#pointsModel.points.length) {
+      return;
+    }
+
     const prevTripInfoComponent = this.#tripInfoComponent;
 
     this.#tripInfoComponent = new TripInfoView({
@@ -29,5 +37,5 @@ export default class TripInfoPresenter {
     }
 
     render(this.#tripInfoComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
-  };
+  }
 }

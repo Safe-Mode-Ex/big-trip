@@ -1,4 +1,4 @@
-import { remove, render } from '../framework/render';
+import { remove, render, RenderPosition } from '../framework/render';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { FilterType, SortType, UpdateType, UserAction } from '../const';
 import { sort } from '../utils/sort';
@@ -32,6 +32,7 @@ export default class TripPresenter {
   #filterType = FilterType.ALL;
   #isLoading = true;
   #isError = false;
+  #isAddingNewPoint = false;
 
   #tripContainer = null;
   #pointsModel = null;
@@ -69,6 +70,7 @@ export default class TripPresenter {
   }
 
   createPoint() {
+    this.#isAddingNewPoint = true;
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
     this.#addPointPresenter.init();
@@ -80,14 +82,16 @@ export default class TripPresenter {
       return;
     }
 
-    if (!this.points.length) {
+    render(this.#listComponent, this.#tripContainer);
+
+    if (!this.points.length && !this.#isAddingNewPoint) {
       this.#renderListEmpty();
       return;
     }
 
     this.#renderSort();
-    render(this.#listComponent, this.#tripContainer);
     this.#renderPoints();
+    this.#isAddingNewPoint = false;
   }
 
   #clearTrip(resetSortType = false) {
@@ -135,7 +139,7 @@ export default class TripPresenter {
       currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange,
     });
-    render(this.#sortComponent, this.#tripContainer);
+    render(this.#sortComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderLoading() {
