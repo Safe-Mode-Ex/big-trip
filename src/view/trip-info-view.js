@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import AbstractView from '../framework/view/abstract-view';
 
-const DURATION_DATE_FORMAT = 'DD MMM';
+const DURATION_DATE_FORMAT = 'D MMM';
 const RU_LOCALE = 'ru-RU';
 const MIN_LONG_ROUTE_POINTS_COUNT = 3;
 
@@ -70,7 +70,7 @@ export default class TripInfoView extends AbstractView {
       startDate.format(DURATION_DATE_FORMAT);
 
     this.#tripDuration =
-      `${dateFromString} - ${endDate.format(DURATION_DATE_FORMAT)}`.toUpperCase();
+      `${dateFromString} — ${endDate.format(DURATION_DATE_FORMAT)}`.toUpperCase();
   }
 
   #setTripCost(points) {
