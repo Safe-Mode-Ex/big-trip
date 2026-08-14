@@ -17,7 +17,7 @@ export default class TripInfoPresenter {
     this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
-  destroy() {
+  #destroy() {
     if (!this.#tripInfoComponent) {
       return;
     }
@@ -27,6 +27,7 @@ export default class TripInfoPresenter {
   }
 
   #handleModelEvent = () => {
+    this.#destroy();
     this.#renderTripInfo();
   };
 

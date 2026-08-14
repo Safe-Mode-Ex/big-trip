@@ -38,8 +38,6 @@ export default class TripPresenter {
   #pointsModel = null;
   #filterModel = null;
 
-  #handleTripClear = null;
-
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER,
     upperLimit: TimeLimit.UPPER,
@@ -50,20 +48,20 @@ export default class TripPresenter {
     pointsModel,
     filterModel,
     onAddPointDestroy,
-    onTripClear,
   }) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
-    this.#handleTripClear = onTripClear;
 
     this.#addPointPresenter = new AddPointPresenter({
       pointListContainer: this.#listComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: () => {
         onAddPointDestroy();
-        remove(this.#sortComponent);
-        this.#renderTrip();
+        if (!this.#isAddingNewPoint) {
+          this.#clearTrip();
+          this.#renderTrip();
+        }
       },
     });
 
@@ -95,23 +93,20 @@ export default class TripPresenter {
       return;
     }
 
-    render(this.#listComponent, this.#tripContainer);
-
     if (!this.points.length && !this.#isAddingNewPoint) {
       this.#renderListEmpty();
       return;
     }
 
+    render(this.#listComponent, this.#tripContainer);
     this.#renderSort();
     this.#renderPoints();
     this.#isAddingNewPoint = false;
   }
 
   #clearTrip(resetSortType = false) {
-    this.#addPointPresenter.destroy();
     this.#pointsPresenters.forEach((presenter) => presenter.destroy());
     this.#pointsPresenters.clear();
-    this.#handleTripClear();
 
     remove(this.#sortComponent);
     remove(this.#loadingComponent);
@@ -213,10 +208,12 @@ export default class TripPresenter {
         this.#pointsPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
+        this.#addPointPresenter.destroy();
         this.#clearTrip();
         this.#renderTrip();
         break;
       case UpdateType.MAJOR:
+        this.#addPointPresenter.destroy();
         this.#clearTrip({resetSortType: true});
         this.#renderTrip();
         break;
