@@ -35,7 +35,7 @@ function getDurationString(dateFrom, dateTo) {
 }
 
 function isDatesEqual(dateA, dateB) {
-  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'm');
 }
 
 export {

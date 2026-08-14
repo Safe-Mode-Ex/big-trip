@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import AbstractView from '../framework/view/abstract-view';
 
-const END_DATE_FORMAT = 'DD MMM';
+const DURATION_DATE_FORMAT = 'DD MMM';
 const RU_LOCALE = 'ru-RU';
 
 function createTripInfoTemplate(tripRoute, tripDuration, tripCost) {
@@ -60,8 +60,14 @@ export default class TripInfoView extends AbstractView {
   #setTripDuration(points) {
     const {dateFrom} = points[0];
     const {dateTo} = points[points.length - 1];
+    const startDate = dayjs(dateFrom);
+    const endDate = dayjs(dateTo);
+    const isTheSameMonth = startDate.month() === endDate.month();
+    const dateFromString = isTheSameMonth ?
+      startDate.date() :
+      startDate.format(DURATION_DATE_FORMAT);
 
-    this.#tripDuration = `${dayjs(dateFrom).date()} - ${dayjs(dateTo).format(END_DATE_FORMAT)}`;
+    this.#tripDuration = `${dateFromString} - ${endDate.format(DURATION_DATE_FORMAT)}`;
   }
 
   #setTripCost(points) {
