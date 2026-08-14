@@ -33,7 +33,6 @@ jobs:
 
       - name: Build
         env:
-          AUTHORIZATION: ${{ secrets.AUTHORIZATION }}
           END_POINT: ${{ vars.END_POINT }}
         run: |
           npm install
