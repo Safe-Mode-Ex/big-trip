@@ -21,7 +21,7 @@ export default class TripInfoPresenter {
     const prevTripInfoComponent = this.#tripInfoComponent;
 
     this.#tripInfoComponent = new TripInfoView({
-      points: sort[SortType.DAY](this.#pointsModel.points, true),
+      points: sort[SortType.DAY](this.#pointsModel.points),
     });
 
     if (prevTripInfoComponent) {
