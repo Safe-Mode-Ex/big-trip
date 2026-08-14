@@ -210,6 +210,7 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.updateElement({
       type: evt.target.value,
+      offers: [],
     });
   };
 

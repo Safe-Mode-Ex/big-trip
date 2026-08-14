@@ -17,7 +17,7 @@ function createEventTypeList(id) {
                 class="event__type-input visually-hidden"
                 type="radio"
                 name="event-type"
-                value="${type}"
+                value="${eventType}"
               >
               <label
                 class="event__type-label event__type-label--${eventType}"
@@ -39,7 +39,6 @@ function createEditPointHeaderTemplate({
   isDeleting,
   isDisabled,
 }) {
-  const eventType = type.toLowerCase();
   const deleteButtonText = isDeleting ? 'Deleting' : 'Delete';
 
   return `
@@ -51,7 +50,7 @@ function createEditPointHeaderTemplate({
             class="event__type-icon"
             width="17"
             height="17"
-            src="img/icons/${eventType}.png"
+            src="img/icons/${type}.png"
             alt="Event type icon"
           >
         </label>

@@ -1,13 +1,13 @@
 const TYPES = [
-  'taxi',
-  'bus',
-  'train',
+  'Taxi',
+  'Bus',
+  'Train',
   'Ship',
-  'drive',
-  'flight',
-  'check-in',
-  'sightseeing',
-  'restaurant',
+  'Drive',
+  'Flight',
+  'Check-in',
+  'Sightseeing',
+  'Restaurant',
 ];
 
 const EMPTY_POINT = {
