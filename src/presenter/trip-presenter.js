@@ -38,20 +38,33 @@ export default class TripPresenter {
   #pointsModel = null;
   #filterModel = null;
 
+  #handleTripClear = null;
+
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER,
     upperLimit: TimeLimit.UPPER,
   });
 
-  constructor({tripContainer, pointsModel, filterModel, onAddPointDestroy}) {
+  constructor({
+    tripContainer,
+    pointsModel,
+    filterModel,
+    onAddPointDestroy,
+    onTripClear,
+  }) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this.#handleTripClear = onTripClear;
 
     this.#addPointPresenter = new AddPointPresenter({
       pointListContainer: this.#listComponent.element,
       onDataChange: this.#handleViewAction,
-      onDestroy: onAddPointDestroy,
+      onDestroy: () => {
+        onAddPointDestroy();
+        remove(this.#sortComponent);
+        this.#renderTrip();
+      },
     });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -98,6 +111,7 @@ export default class TripPresenter {
     this.#addPointPresenter.destroy();
     this.#pointsPresenters.forEach((presenter) => presenter.destroy());
     this.#pointsPresenters.clear();
+    this.#handleTripClear();
 
     remove(this.#sortComponent);
     remove(this.#loadingComponent);

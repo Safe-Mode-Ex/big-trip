@@ -121,7 +121,12 @@ export default class EditPointView extends AbstractStatefulView {
   get template() {
     this.#headerView = new EditPointHeaderView({point: this._state});
     this.#setOffersByType();
-    return createEditPointTemplate(this._state, this.#headerView.element, this.#offersByType);
+
+    return createEditPointTemplate(
+      this._state,
+      this.#headerView.element,
+      this.#offersByType
+    );
   }
 
   removeElement() {

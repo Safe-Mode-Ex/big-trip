@@ -39,7 +39,7 @@ function createEditPointHeaderTemplate({
   isDeleting,
   isDisabled,
 }) {
-  const deleteButtonText = isDeleting ? 'Deleting' : 'Delete';
+  const deleteButtonText = isDeleting ? 'Deleting...' : 'Delete';
 
   return `
     <header class="event__header">
@@ -128,14 +128,14 @@ function createEditPointHeaderTemplate({
         type="submit"
         ${isDisabled ? 'disabled' : ''}
       >
-        ${isSaving ? 'Saving' : 'Save'}
+        ${isSaving ? 'Saving...' : 'Save'}
       </button>
       <button
         class="event__reset-btn"
         type="reset"
         ${isDisabled ? 'disabled' : ''}
       >
-        ${id ? deleteButtonText : 'Reset'}
+        ${id ? deleteButtonText : 'Cancel'}
       </button>
 
       ${id ? (`

@@ -69,12 +69,16 @@ export default class TripInfoView extends AbstractView {
       startDate.date() :
       startDate.format(DURATION_DATE_FORMAT);
 
-    this.#tripDuration = `${dateFromString} - ${endDate.format(DURATION_DATE_FORMAT)}`;
+    this.#tripDuration =
+      `${dateFromString} - ${endDate.format(DURATION_DATE_FORMAT)}`.toUpperCase();
   }
 
   #setTripCost(points) {
     this.#tripCost = points.reduce((result, {basePrice, offers}) =>
-      result + basePrice + offers.reduce((offersPrice, {price}) => offersPrice + price, 0),
+      result + basePrice + offers.reduce(
+        (offersPrice, {price}) =>offersPrice + price,
+        0,
+      ),
     0);
   }
 }

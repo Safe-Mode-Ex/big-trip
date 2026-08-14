@@ -36,6 +36,7 @@ const tripPresenter = new TripPresenter({
   pointsModel,
   filterModel,
   onAddPointDestroy: handleAddPointFormClose,
+  onTripClear: handleTripClear,
 });
 
 const addPointButtonComponent = new AddPointButtonView({
@@ -49,6 +50,10 @@ function handleAddPointFormClose() {
 function handleAddPointButtonClick() {
   tripPresenter.createPoint();
   addPointButtonComponent.element.disabled = true;
+}
+
+function handleTripClear() {
+  tripInfoPresenter.destroy();
 }
 
 tripInfoPresenter.init();
