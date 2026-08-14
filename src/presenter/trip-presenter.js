@@ -1,4 +1,4 @@
-import { remove, render } from '../framework/render';
+import { remove, render, RenderPosition } from '../framework/render';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { FilterType, SortType, UpdateType, UserAction } from '../const';
 import { sort } from '../utils/sort';
@@ -11,13 +11,18 @@ import PointPresenter from './point-presenter';
 import AddPointPresenter from './add-point-presenter';
 
 const TimeLimit = {
-  LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
+  LOWER: 350,
+  UPPER: 1000,
+};
+
+const LoadingMessage = {
+  ERROR: 'Failed to load latest route information',
+  LOADING: 'Loading...',
 };
 
 export default class TripPresenter {
-  #loadingComponent = new LoadingView();
   #listComponent = new ListView();
+  #loadingComponent = null;
   #sortComponent = null;
   #emptyListComponent = null;
 
@@ -26,17 +31,24 @@ export default class TripPresenter {
   #currentSortType = SortType.DAY;
   #filterType = FilterType.ALL;
   #isLoading = true;
+  #isError = false;
+  #isAddingNewPoint = false;
 
   #tripContainer = null;
   #pointsModel = null;
   #filterModel = null;
 
   #uiBlocker = new UiBlocker({
-    lowerLimit: TimeLimit.LOWER_LIMIT,
-    upperLimit: TimeLimit.UPPER_LIMIT
+    lowerLimit: TimeLimit.LOWER,
+    upperLimit: TimeLimit.UPPER,
   });
 
-  constructor({tripContainer, pointsModel, filterModel, onAddPointDestroy}) {
+  constructor({
+    tripContainer,
+    pointsModel,
+    filterModel,
+    onAddPointDestroy,
+  }) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
@@ -44,7 +56,13 @@ export default class TripPresenter {
     this.#addPointPresenter = new AddPointPresenter({
       pointListContainer: this.#listComponent.element,
       onDataChange: this.#handleViewAction,
-      onDestroy: onAddPointDestroy,
+      onDestroy: () => {
+        onAddPointDestroy();
+        if (!this.#isAddingNewPoint) {
+          this.#clearTrip();
+          this.#renderTrip();
+        }
+      },
     });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -63,29 +81,30 @@ export default class TripPresenter {
   }
 
   createPoint() {
+    this.#isAddingNewPoint = true;
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
     this.#addPointPresenter.init();
   }
 
   #renderTrip() {
-    if (this.#isLoading) {
+    if (this.#isLoading || this.#isError) {
       this.#renderLoading();
       return;
     }
 
-    if (!this.points.length) {
+    if (!this.points.length && !this.#isAddingNewPoint) {
       this.#renderListEmpty();
       return;
     }
 
-    this.#renderSort();
     render(this.#listComponent, this.#tripContainer);
+    this.#renderSort();
     this.#renderPoints();
+    this.#isAddingNewPoint = false;
   }
 
   #clearTrip(resetSortType = false) {
-    this.#addPointPresenter.destroy();
     this.#pointsPresenters.forEach((presenter) => presenter.destroy());
     this.#pointsPresenters.clear();
 
@@ -129,10 +148,13 @@ export default class TripPresenter {
       currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange,
     });
-    render(this.#sortComponent, this.#tripContainer);
+    render(this.#sortComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderLoading() {
+    this.#loadingComponent = new LoadingView({
+      message: this.#isError ? LoadingMessage.ERROR : LoadingMessage.LOADING,
+    });
     render(this.#loadingComponent, this.#tripContainer);
   }
 
@@ -186,16 +208,23 @@ export default class TripPresenter {
         this.#pointsPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
+        this.#addPointPresenter.destroy();
         this.#clearTrip();
         this.#renderTrip();
         break;
       case UpdateType.MAJOR:
+        this.#addPointPresenter.destroy();
         this.#clearTrip({resetSortType: true});
         this.#renderTrip();
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+
+        if (data.isError) {
+          this.#isError = true;
+        }
+
         this.#renderTrip();
         break;
     }

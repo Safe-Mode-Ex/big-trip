@@ -8,8 +8,6 @@ export default class TripInfoPresenter {
   #pointsModel = null;
   #tripInfoComponent = null;
 
-  #path = '';
-
   constructor({tripInfoContainer, pointsModel}) {
     this.#tripInfoContainer = tripInfoContainer;
     this.#pointsModel = pointsModel;
@@ -19,11 +17,29 @@ export default class TripInfoPresenter {
     this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
+  #destroy() {
+    if (!this.#tripInfoComponent) {
+      return;
+    }
+
+    remove(this.#tripInfoComponent);
+    this.#tripInfoComponent = null;
+  }
+
   #handleModelEvent = () => {
+    this.#destroy();
+    this.#renderTripInfo();
+  };
+
+  #renderTripInfo() {
+    if (!this.#pointsModel.points.length) {
+      return;
+    }
+
     const prevTripInfoComponent = this.#tripInfoComponent;
 
     this.#tripInfoComponent = new TripInfoView({
-      points: sort[SortType.DAY](this.#pointsModel.points, true),
+      points: sort[SortType.DAY](this.#pointsModel.points),
     });
 
     if (prevTripInfoComponent) {
@@ -31,5 +47,5 @@ export default class TripInfoPresenter {
     }
 
     render(this.#tripInfoComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
-  };
+  }
 }

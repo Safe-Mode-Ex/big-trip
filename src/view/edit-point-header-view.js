@@ -1,6 +1,6 @@
 import he from 'he';
 import AbstractView from '../framework/view/abstract-view';
-import { TYPES } from '../const';
+import { MIN_POINT_PRICE, TYPES } from '../const';
 import Store from '../store/store';
 
 function createEventTypeList(id) {
@@ -17,7 +17,7 @@ function createEventTypeList(id) {
                 class="event__type-input visually-hidden"
                 type="radio"
                 name="event-type"
-                value="${type}"
+                value="${eventType}"
               >
               <label
                 class="event__type-label event__type-label--${eventType}"
@@ -39,8 +39,7 @@ function createEditPointHeaderTemplate({
   isDeleting,
   isDisabled,
 }) {
-  const eventType = type.toLowerCase();
-  const deleteButtonText = isDeleting ? 'Deleting' : 'Delete';
+  const deleteButtonText = isDeleting ? 'Deleting...' : 'Delete';
 
   return `
     <header class="event__header">
@@ -51,7 +50,7 @@ function createEditPointHeaderTemplate({
             class="event__type-icon"
             width="17"
             height="17"
-            src="img/icons/${eventType}.png"
+            src="img/icons/${type}.png"
             alt="Event type icon"
           >
         </label>
@@ -115,7 +114,8 @@ function createEditPointHeaderTemplate({
         <input
           class="event__input event__input--price"
           id="event-price-${id}"
-          type="text"
+          type="number"
+          min="${MIN_POINT_PRICE}"
           name="event-price"
           value="${basePrice}"
           required
@@ -128,14 +128,14 @@ function createEditPointHeaderTemplate({
         type="submit"
         ${isDisabled ? 'disabled' : ''}
       >
-        ${isSaving ? 'Saving' : 'Save'}
+        ${isSaving ? 'Saving...' : 'Save'}
       </button>
       <button
         class="event__reset-btn"
         type="reset"
         ${isDisabled ? 'disabled' : ''}
       >
-        ${id ? deleteButtonText : 'Reset'}
+        ${id ? deleteButtonText : 'Cancel'}
       </button>
 
       ${id ? (`

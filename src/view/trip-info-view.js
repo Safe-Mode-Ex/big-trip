@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
 import AbstractView from '../framework/view/abstract-view';
 
-const END_DATE_FORMAT = 'DD MMM';
+const DURATION_DATE_FORMAT = 'D MMM';
 const RU_LOCALE = 'ru-RU';
+const MIN_LONG_ROUTE_POINTS_COUNT = 3;
 
 function createTripInfoTemplate(tripRoute, tripDuration, tripCost) {
   const formattedCost = new Intl.NumberFormat(RU_LOCALE, {
@@ -46,13 +47,14 @@ export default class TripInfoView extends AbstractView {
   }
 
   #setTripRoute(points) {
+    const cities = points.map(({destination}) => destination.name);
+    const isLongRoute = new Set(cities).size > MIN_LONG_ROUTE_POINTS_COUNT;
     const {name: firstDestination} = points[0].destination;
     const {name: lastDestination} = points[points.length - 1].destination;
 
-    this.#tripRoute = points.length > 3 ?
+    this.#tripRoute = isLongRoute ?
       `${firstDestination} – ... – ${lastDestination}` :
-      points
-        .map(({destination}) => destination.name)
+      cities
         .filter((name, index, names) => !index || name !== names[index - 1])
         .join(' – ');
   }
@@ -60,13 +62,23 @@ export default class TripInfoView extends AbstractView {
   #setTripDuration(points) {
     const {dateFrom} = points[0];
     const {dateTo} = points[points.length - 1];
+    const startDate = dayjs(dateFrom);
+    const endDate = dayjs(dateTo);
+    const isTheSameMonth = startDate.month() === endDate.month();
+    const dateFromString = isTheSameMonth ?
+      startDate.date() :
+      startDate.format(DURATION_DATE_FORMAT);
 
-    this.#tripDuration = `${dayjs(dateFrom).date()} - ${dayjs(dateTo).format(END_DATE_FORMAT)}`;
+    this.#tripDuration =
+      `${dateFromString} — ${endDate.format(DURATION_DATE_FORMAT)}`.toUpperCase();
   }
 
   #setTripCost(points) {
     this.#tripCost = points.reduce((result, {basePrice, offers}) =>
-      result + basePrice + offers.reduce((offersPrice, {price}) => offersPrice + price, 0),
+      result + basePrice + offers.reduce(
+        (offersPrice, {price}) =>offersPrice + price,
+        0,
+      ),
     0);
   }
 }

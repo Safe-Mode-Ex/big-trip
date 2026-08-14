@@ -1,12 +1,11 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { EMPTY_POINT, FLATPICKR_DATE_FORMAT } from '../const';
+import { EMPTY_POINT, FLATPICKR_DATE_FORMAT, MIN_POINT_PRICE } from '../const';
 import Store from '../store/store';
 import EditPointHeaderView from '../view/edit-point-header-view';
 
 const OFFER_ID_REGEXP = /^event-offer-(.+)$/;
-const MIN_POINT_PRICE = 1;
 
 function createEditPointDetailsTemplate({
   offersByType,
@@ -122,7 +121,12 @@ export default class EditPointView extends AbstractStatefulView {
   get template() {
     this.#headerView = new EditPointHeaderView({point: this._state});
     this.#setOffersByType();
-    return createEditPointTemplate(this._state, this.#headerView.element, this.#offersByType);
+
+    return createEditPointTemplate(
+      this._state,
+      this.#headerView.element,
+      this.#offersByType
+    );
   }
 
   removeElement() {
@@ -194,12 +198,6 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-
-    if (!this._state.basePrice) {
-      this.element.elements['event-price'].value = '';
-      return;
-    }
-
     this.#handleFormSubmit(EditPointView.#parseStateToPoint(this._state));
   };
 
@@ -217,6 +215,7 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.updateElement({
       type: evt.target.value,
+      offers: [],
     });
   };
 

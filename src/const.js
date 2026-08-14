@@ -1,13 +1,13 @@
 const TYPES = [
-  'taxi',
-  'bus',
-  'train',
+  'Taxi',
+  'Bus',
+  'Train',
   'Ship',
-  'drive',
-  'flight',
-  'check-in',
-  'sightseeing',
-  'restaurant',
+  'Drive',
+  'Flight',
+  'Check-in',
+  'Sightseeing',
+  'Restaurant',
 ];
 
 const EMPTY_POINT = {
@@ -58,6 +58,7 @@ const DEC_RADIX = 10;
 const KEY_ESCAPE = 'Escape';
 const EVENT_DATE_FORMAT = 'DD/MM/YY HH:mm';
 const FLATPICKR_DATE_FORMAT = 'd/m/y H:i';
+const MIN_POINT_PRICE = 1;
 
 export {
   TYPES,
@@ -72,4 +73,5 @@ export {
   KEY_ESCAPE,
   EVENT_DATE_FORMAT,
   FLATPICKR_DATE_FORMAT,
+  MIN_POINT_PRICE,
 };
