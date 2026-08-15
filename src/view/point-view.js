@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
+import { escapeHtml } from '../utils/common';
 import { getDateTime, getDurationString, humanizePointDateFrom, humanizePointTime } from '../utils/point';
 
 function createSelectedOffersTemplate(offers) {
@@ -8,9 +9,9 @@ function createSelectedOffersTemplate(offers) {
     <ul class="event__selected-offers">
       ${offers.map(({title, price}) => (`
         <li class="event__offer">
-          <span class="event__offer-title">${title}</span>
+          <span class="event__offer-title">${escapeHtml(title)}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${price}</span>
+          <span class="event__offer-price">${escapeHtml(price)}</span>
         </li>
       `)).join('')}
     </ul>
@@ -28,6 +29,8 @@ function createPointTemplate(point) {
   const dateTimeTo = getDateTime(dateTo, true);
   const duration = getDurationString(dateFrom, dateTo);
 
+  const escapedType = escapeHtml(type);
+
   return `
     <div class="event">
       <time class="event__date" datetime="${dateTime}">${date}</time>
@@ -36,11 +39,11 @@ function createPointTemplate(point) {
           class="event__type-icon"
           width="42"
           height="42"
-          src="img/icons/${type}.png"
+          src="img/icons/${escapedType}.png"
           alt="Event type icon"
         >
       </div>
-      <h3 class="event__title">${type} ${destination.name}</h3>
+      <h3 class="event__title">${escapedType} ${escapeHtml(destination.name)}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${dateTimeFrom}">${timeFrom}</time>
@@ -50,7 +53,7 @@ function createPointTemplate(point) {
         <p class="event__duration">${duration}</p>
       </div>
       <p class="event__price">
-        &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+        &euro;&nbsp;<span class="event__price-value">${escapeHtml(basePrice)}</span>
       </p>
 
       ${offers.length ? createSelectedOffersTemplate(offers) : ''}

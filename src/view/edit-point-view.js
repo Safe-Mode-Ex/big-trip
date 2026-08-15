@@ -2,6 +2,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { EMPTY_POINT, FLATPICKR_DATE_FORMAT, MIN_POINT_PRICE } from '../const';
+import { escapeHtml } from '../utils/common';
 import Store from '../store/store';
 import EditPointHeaderView from '../view/edit-point-header-view';
 
@@ -27,40 +28,48 @@ function createEditPointDetailsTemplate({
             <h3 class="event__section-title event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${offers.map(({id, title, price}) => (`
-                <div class="event__offer-selector">
-                  <input
-                    class="event__offer-checkbox visually-hidden"
-                    id="event-offer-${id}"
-                    type="checkbox"
-                    name="event-offer[]"
-                    checked
-                    ${isDisabled ? 'disabled' : ''}
-                  >
-                  <label class="event__offer-label" for="event-offer-${id}">
-                  <span class="event__offer-title">${title}</span>
-                  &plus;&euro;&nbsp;
-                  <span class="event__offer-price">${price}</span>
-                </label>
-              </div>
-            `)).join('')}
+              ${offers.map(({id, title, price}) => {
+      const escapedId = escapeHtml(id);
 
-            ${allOffers.map(({id, title, price}) => (`
-              <div class="event__offer-selector">
-                <input
-                  class="event__offer-checkbox visually-hidden"
-                  id="event-offer-${id}"
-                  type="checkbox"
-                  name="event-offer-${id}"
-                  ${isDisabled ? 'disabled' : ''}
-                >
-                <label class="event__offer-label" for="event-offer-${id}">
-                  <span class="event__offer-title">${title}</span>
-                  &plus;&euro;&nbsp;
-                  <span class="event__offer-price">${price}</span>
-                </label>
-              </div>
-            `)).join('')}
+      return `
+          <div class="event__offer-selector">
+            <input
+              class="event__offer-checkbox visually-hidden"
+              id="event-offer-${escapedId}"
+              type="checkbox"
+              name="event-offer[]"
+              checked
+              ${isDisabled ? 'disabled' : ''}
+            >
+            <label class="event__offer-label" for="event-offer-${escapedId}">
+            <span class="event__offer-title">${escapeHtml(title)}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${escapeHtml(price)}</span>
+          </label>
+        </div>
+      `;
+    }).join('')}
+
+            ${allOffers.map(({id, title, price}) => {
+      const escapedId = escapeHtml(id);
+
+      return `
+        <div class="event__offer-selector">
+          <input
+            class="event__offer-checkbox visually-hidden"
+            id="event-offer-${escapedId}"
+            type="checkbox"
+            name="event-offer-${escapedId}"
+            ${isDisabled ? 'disabled' : ''}
+          >
+          <label class="event__offer-label" for="event-offer-${escapedId}">
+            <span class="event__offer-title">${escapeHtml(title)}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${escapeHtml(price)}</span>
+          </label>
+        </div>
+      `;
+    }).join('')}
           </div>
         </section>
       `) : ''}
@@ -68,12 +77,16 @@ function createEditPointDetailsTemplate({
       ${hasDestinationDescription ? (`
         <section class="event__section event__section--destination">
           <h3 class="event__section-title event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destination.description}</p>
+          <p class="event__destination-description">${escapeHtml(destination.description)}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
               ${destination.pictures.map(({src, description}) => (`
-                <img class="event__photo" src="${src}" alt="${description}">
+                <img
+                  class="event__photo"
+                  src="${(escapeHtml(src))}"
+                  alt="${escapeHtml(description)}"
+                >
               `)).join('')}
             </div>
           </div>

@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import { generateSort } from '../mock/sort';
+import { generateSort } from '../utils/sort';
 
 function createSortTemplate(sort, currentSortType) {
   return `

@@ -10,4 +10,4 @@ if (!session) {
 }
 
 export const END_POINT = process.env.END_POINT;
-export const AUTHORIZATION = `Basic ${authToken}`;
+export const AUTHORIZATION = authToken;
