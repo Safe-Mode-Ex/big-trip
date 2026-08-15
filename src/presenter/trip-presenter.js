@@ -38,10 +38,7 @@ export default class TripPresenter {
   #pointsModel = null;
   #filterModel = null;
 
-  #uiBlocker = new UiBlocker({
-    lowerLimit: TimeLimit.LOWER,
-    upperLimit: TimeLimit.UPPER,
-  });
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER, TimeLimit.UPPER);
 
   constructor({
     tripContainer,

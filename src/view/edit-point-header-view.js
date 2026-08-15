@@ -1,6 +1,6 @@
-import he from 'he';
 import AbstractView from '../framework/view/abstract-view';
 import { MIN_POINT_PRICE, TYPES } from '../const';
+import { escapeHtml } from '../utils/common';
 import Store from '../store/store';
 
 function createEventTypeList(id) {
@@ -10,20 +10,24 @@ function createEventTypeList(id) {
         <legend class="visually-hidden">Event type</legend>
 
         ${TYPES.map((type) => {
-    const eventType = type.toLowerCase();
-    return `<div class="event__type-item">
-              <input
-                id="event-type-${eventType}-${id}"
-                class="event__type-input visually-hidden"
-                type="radio"
-                name="event-type"
-                value="${eventType}"
-              >
-              <label
-                class="event__type-label event__type-label--${eventType}"
-                for="event-type-${eventType}-${id}"
-              >${type}</label>
-            </div>`;
+    const escapedType = escapeHtml(type);
+    const eventType = escapedType.toLowerCase();
+
+    return `
+      <div class="event__type-item">
+        <input
+          id="event-type-${eventType}-${id}"
+          class="event__type-input visually-hidden"
+          type="radio"
+          name="event-type"
+          value="${eventType}"
+        >
+        <label
+          class="event__type-label event__type-label--${eventType}"
+          for="event-type-${eventType}-${id}"
+        >${escapedType}</label>
+      </div>
+    `;
   }).join('')}
       </fieldset>
     </div>
@@ -40,65 +44,70 @@ function createEditPointHeaderTemplate({
   isDisabled,
 }) {
   const deleteButtonText = isDeleting ? 'Deleting...' : 'Delete';
+  const escapedId = escapeHtml(id);
+  const escapedType = escapeHtml(type);
+  const escapedBasePrice = escapeHtml(basePrice);
 
   return `
     <header class="event__header">
       <div class="event__type-wrapper">
-        <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
+        <label class="event__type  event__type-btn" for="event-type-toggle-${escapedId}">
           <span class="visually-hidden">Choose event type</span>
           <img
             class="event__type-icon"
             width="17"
             height="17"
-            src="img/icons/${type}.png"
+            src="img/icons/${escapedType}.png"
             alt="Event type icon"
           >
         </label>
         <input
           class="event__type-toggle visually-hidden"
-          id="event-type-toggle-${id}"
+          id="event-type-toggle-${escapedId}"
           type="checkbox"
           ${isDisabled ? 'disabled' : ''}
         >
 
-        ${createEventTypeList(id)}
+        ${createEventTypeList(escapedId)}
       </div>
 
       <div class="event__field-group event__field-group--destination">
         <label
           class="event__label event__type-output"
-          for="event-destination-${id}"
-        >${type}</label>
+          for="event-destination-${escapedId}"
+        >${escapedType}</label>
         <input
           class="event__input event__input--destination"
-          id="event-destination-${id}"
+          id="event-destination-${escapedId}"
           type="text"
           name="event-destination"
-          value="${destination ? he.encode(destination.name) : ''}"
-          list="destination-list-${id}"
+          value="${destination ? escapeHtml(destination.name) : ''}"
+          list="destination-list-${escapedId}"
           required
           ${isDisabled ? 'disabled' : ''}
         >
-        <datalist id="destination-list-${id}">
-          ${Store.destinations.map(({name}) => `<option value="${name}"></option>`)}
+        <datalist id="destination-list-${escapedId}">
+          ${Store.destinations.map(({name}) => `
+            <option value="${escapeHtml(name)}"></option>
+          `)}
         </datalist>
       </div>
 
       <div class="event__field-group event__field-group--time">
-        <label class="visually-hidden" for="event-start-time-${id}">From</label>
+        <label class="visually-hidden" for="event-start-time-${escapedId}">From</label>
         <input
           class="event__input event__input--time"
-          id="event-start-time-${id}"
+          id="event-start-time-${escapedId}"
           type="text"
           name="event-start-time"
           required
           ${isDisabled ? 'disabled' : ''}
         >
         &mdash;
-        <label class="visually-hidden" for="event-end-time-${id}">To</label>
+        <label class="visually-hidden" for="event-end-time-${escapedId}">To</label>
         <input
           class="event__input event__input--time"
-          id="event-end-time-${id}"
+          id="event-end-time-${escapedId}"
           type="text"
           name="event-end-time"
           required
@@ -107,17 +116,17 @@ function createEditPointHeaderTemplate({
       </div>
 
       <div class="event__field-group event__field-group--price">
-        <label class="event__label" for="event-price-${id}">
+        <label class="event__label" for="event-price-${escapedId}">
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
         <input
           class="event__input event__input--price"
-          id="event-price-${id}"
+          id="event-price-${escapedId}"
           type="number"
           min="${MIN_POINT_PRICE}"
           name="event-price"
-          value="${basePrice}"
+          value="${escapedBasePrice}"
           required
           ${isDisabled ? 'disabled' : ''}
         >
@@ -135,10 +144,10 @@ function createEditPointHeaderTemplate({
         type="reset"
         ${isDisabled ? 'disabled' : ''}
       >
-        ${id ? deleteButtonText : 'Cancel'}
+        ${escapedId ? deleteButtonText : 'Cancel'}
       </button>
 
-      ${id ? (`
+      ${escapedId ? (`
         <button
           class="event__rollup-btn"
           type="button"

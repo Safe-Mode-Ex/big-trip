@@ -78,6 +78,7 @@ export default class PointPresenter {
   destroy() {
     remove(this.#pointComponent);
     remove(this.#pointEditComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
   setSaving() {
@@ -153,12 +154,12 @@ export default class PointPresenter {
   #closeEditForm() {
     this.#pointEditComponent.reset(this.#point);
     this.#replaceFormToCard();
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
   #replaceFormToCard() {
     replace(this.#pointComponent, this.#pointEditComponent);
     this.#mode = Mode.DEFAULT;
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
   #replaceCardToForm() {

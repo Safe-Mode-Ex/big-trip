@@ -13,4 +13,16 @@ const sort = {
   [SortType.OFFERS]: null,
 };
 
-export {sort};
+function generateSort() {
+  return Object.entries(sort).map(
+    ([sortType, sortPoints]) => ({
+      type: sortType,
+      disabled: !sortPoints,
+    })
+  );
+}
+
+export {
+  sort,
+  generateSort,
+};

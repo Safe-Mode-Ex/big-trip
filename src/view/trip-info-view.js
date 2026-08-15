@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { escapeHtml } from '../utils/common';
 import AbstractView from '../framework/view/abstract-view';
 
 const DURATION_DATE_FORMAT = 'D MMM';
@@ -47,13 +48,13 @@ export default class TripInfoView extends AbstractView {
   }
 
   #setTripRoute(points) {
-    const cities = points.map(({destination}) => destination.name);
+    const cities = points.map(({destination}) => escapeHtml(destination.name));
     const isLongRoute = new Set(cities).size > MIN_LONG_ROUTE_POINTS_COUNT;
     const {name: firstDestination} = points[0].destination;
     const {name: lastDestination} = points[points.length - 1].destination;
 
     this.#tripRoute = isLongRoute ?
-      `${firstDestination} – ... – ${lastDestination}` :
+      `${escapeHtml(firstDestination)} – ... – ${escapeHtml(lastDestination)}` :
       cities
         .filter((name, index, names) => !index || name !== names[index - 1])
         .join(' – ');
@@ -76,7 +77,7 @@ export default class TripInfoView extends AbstractView {
   #setTripCost(points) {
     this.#tripCost = points.reduce((result, {basePrice, offers}) =>
       result + basePrice + offers.reduce(
-        (offersPrice, {price}) =>offersPrice + price,
+        (offersPrice, {price}) => offersPrice + price,
         0,
       ),
     0);
